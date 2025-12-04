@@ -1,3 +1,4 @@
+using MySqlConnector;
 using TestDataManagement.Api.Models;
 
 namespace TestDataManagement.Api.Repositories;

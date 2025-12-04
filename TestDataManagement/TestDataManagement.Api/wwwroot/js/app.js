@@ -1,422 +1,296 @@
-// API 基础地址
-const API_BASE_URL = 'http://localhost:5000/api';
+// ==========================================
+// API 配置
+// ==========================================
+const API_BASE_URL = 'https://localhost:44374';  // ⚠️ 确保端口号与后端一致
 
-// 全局变量
-let currentPage = 1;
-const pageSize = 20;
-let isEditMode = false;
+// ==========================================
+// 页面加载完成后初始化
+// ==========================================
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('📋 页面加载完成,开始初始化...');
 
-// 初始化
-const init = async () => {
-    await loadModules();
-    await loadTestData();
-    bindEvents();
-    updateCensoringTypeHelp();
-};
+    // 加载模组列表
+    loadModules();
 
+    // 绑定删失类型切换事件
+    const censoringTypeSelect = document.getElementById('censoringType');
+    if (censoringTypeSelect) {
+        censoringTypeSelect.addEventListener('change', handleCensoringTypeChange);
+        // 触发一次以设置初始状态
+        handleCensoringTypeChange();
+    }
+
+    // 绑定保存按钮事件
+    const saveBtn = document.getElementById('saveBtn');
+    if (saveBtn) {
+        saveBtn.addEventListener('click', saveTestData);
+    }
+
+    // 绑定查询按钮事件
+    const queryBtn = document.getElementById('queryBtn');
+    if (queryBtn) {
+        queryBtn.addEventListener('click', queryTestData);
+    }
+
+    // 初始加载数据列表
+    queryTestData();
+});
+
+// ==========================================
 // 加载模组列表
-const loadModules = async () => {
+// ==========================================
+async function loadModules() {
     try {
-        const response = await fetch(`${API_BASE_URL}/Module`);
+        console.log('🔄 正在加载模组列表...');
+        console.log('📡 API 地址:', `${API_BASE_URL}/api/module`);
+
+        const response = await fetch(`${API_BASE_URL}/api/module`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        console.log('📊 响应状态:', response.status, response.statusText);
+
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+
         const result = await response.json();
+        console.log('✅ API 返回结果:', result);
 
-        if (result.success) {
-            const modules = result.data;
-            const moduleSelect = document.getElementById('moduleId');
-            const queryModuleSelect = document.getElementById('queryModuleId');
+        const select = document.getElementById('moduleId');
+        if (!select) {
+            console.error('❌ 找不到 id="moduleId" 的 select 元素');
+            return;
+        }
 
-            // 清空并填充选项
-            moduleSelect.innerHTML = '<option value="">请选择模组</option>';
-            queryModuleSelect.innerHTML = '<option value="">全部模组</option>';
+        // 清空现有选项
+        select.innerHTML = '<option value="">请选择模组</option>';
 
-            modules.forEach(module => {
-                const option = `<option value="${module.moduleId}">${module.moduleCode} - ${module.moduleName}</option>`;
-                moduleSelect.innerHTML += option;
-                queryModuleSelect.innerHTML += option;
+        // 检查返回数据格式
+        if (result.success && result.data && Array.isArray(result.data)) {
+            console.log(`📦 共获取到 ${result.data.length} 个模组`);
+
+            result.data.forEach(module => {
+                const option = document.createElement('option');
+                option.value = module.moduleId;
+                option.textContent = `${module.moduleCode} - ${module.moduleName}`;
+                select.appendChild(option);
             });
+
+            console.log('✅ 模组列表加载成功');
+        } else {
+            console.warn('⚠️ 返回数据格式异常:', result);
+            alert('模组数据格式错误,请检查后端返回格式');
         }
     } catch (error) {
-        showMessage('加载模组列表失败', 'error');
-        console.error(error);
+        console.error('❌ 加载模组失败:', error);
+        alert(`加载模组列表失败: ${error.message}\n\n请检查:\n1. 后端服务是否运行在 ${API_BASE_URL}\n2. 浏览器控制台查看详细错误信息`);
     }
-};
+}
 
-// 加载测试数据
-const loadTestData = async (page = 1) => {
-    showLoading(true);
+// ==========================================
+// 删失类型切换处理
+// ==========================================
+function handleCensoringTypeChange() {
+    const censoringType = parseInt(document.getElementById('censoringType').value);
+    const failureTimeRow = document.getElementById('failureTimeRow');
+    const lastInspectionRow = document.getElementById('lastInspectionRow');
+    const failureTimeLabel = document.getElementById('failureTimeLabel');
+    const failureTimeInput = document.getElementById('failureTime');
+
+    // 隐藏所有条件字段
+    lastInspectionRow.style.display = 'none';
+
+    // 根据删失类型显示对应字段
+    switch(censoringType) {
+        case 0: // 完全数据
+            failureTimeLabel.textContent = '失效时间';
+            failureTimeInput.placeholder = '精确的失效时间(小时)';
+            failureTimeRow.style.display = 'flex';
+            break;
+        case 1: // 右删失
+            failureTimeLabel.textContent = '截止时间';
+            failureTimeInput.placeholder = '测试终止时间(小时)';
+            failureTimeRow.style.display = 'flex';
+            break;
+        case 2: // 区间删失
+            failureTimeLabel.textContent = '失效时间上界';
+            failureTimeInput.placeholder = '下次检测时间(小时)';
+            failureTimeRow.style.display = 'flex';
+            lastInspectionRow.style.display = 'flex';
+            break;
+        case 3: // 左删失
+            failureTimeLabel.textContent = '首次检测时间';
+            failureTimeInput.placeholder = '首次检测发现失效的时间(小时)';
+            failureTimeRow.style.display = 'flex';
+            break;
+    }
+}
+
+// ==========================================
+// 保存测试数据
+// ==========================================
+async function saveTestData() {
     try {
-        const query = getQueryParams();
-        query.pageIndex = page;
-        query.pageSize = pageSize;
+        // 收集表单数据
+        const data = {
+            moduleId: parseInt(document.getElementById('moduleId').value),
+            testTime: document.getElementById('testTime').value,
+            testUnit: document.getElementById('testUnit').value || 'hours',
+            testType: document.getElementById('testType').value,
+            quantity: parseInt(document.getElementById('quantity').value) || 1,
+            censoringType: parseInt(document.getElementById('censoringType').value),
+            failureMode: document.getElementById('failureMode').value,
+            temperature: parseFloat(document.getElementById('temperature').value) || null,
+            humidity: parseFloat(document.getElementById('humidity').value) || null,
+            operator: document.getElementById('operator').value || null,
+            remarks: document.getElementById('remarks').value || null
+        };
 
-        const queryString = new URLSearchParams(query).toString();
-        const response = await fetch(`${API_BASE_URL}/TestData?${queryString}`);
+        // 根据删失类型添加时间字段
+        const censoringType = data.censoringType;
+        if (censoringType === 0 || censoringType === 1 || censoringType === 3) {
+            data.failureTime = parseFloat(document.getElementById('failureTime').value);
+        } else if (censoringType === 2) {
+            data.failureTime = parseFloat(document.getElementById('failureTime').value);
+            data.lastInspectionTime = parseFloat(document.getElementById('lastInspectionTime').value);
+        }
+
+        // 验证必填字段
+        if (!data.moduleId) {
+            alert('请选择模组');
+            return;
+        }
+        if (!data.testTime) {
+            alert('请选择测试时间');
+            return;
+        }
+
+        console.log('💾 保存数据:', data);
+
+        const response = await fetch(`${API_BASE_URL}/api/testdata`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        });
+
         const result = await response.json();
 
         if (result.success) {
-            renderDataTable(result.data);
-            renderPagination(result.totalCount, page);
-            currentPage = page;
+            alert('保存成功!');
+            // 清空表单
+            document.getElementById('testDataForm').reset();
+            // 刷新数据列表
+            queryTestData();
         } else {
-            showMessage(result.message, 'error');
+            alert('保存失败: ' + result.message);
         }
     } catch (error) {
-        showMessage('加载数据失败', 'error');
-        console.error(error);
-    } finally {
-        showLoading(false);
+        console.error('❌ 保存失败:', error);
+        alert('保存失败: ' + error.message);
     }
-};
+}
 
-// 获取查询参数
-const getQueryParams = () => {
-    const params = {};
-    const moduleId = document.getElementById('queryModuleId').value;
-    const testType = document.getElementById('queryTestType').value;
-    const censoringType = document.getElementById('queryCensoringType').value;
-    const startDate = document.getElementById('startDate').value;
-    const endDate = document.getElementById('endDate').value;
+// ==========================================
+// 查询测试数据
+// ==========================================
+async function queryTestData() {
+    try {
+        const queryModuleId = document.getElementById('queryModuleId')?.value || '';
+        const queryTestType = document.getElementById('queryTestType')?.value || '';
+        const queryCensoringType = document.getElementById('queryCensoringType')?.value || '';
 
-    if (moduleId) params.moduleId = moduleId;
-    if (testType) params.testType = testType;
-    if (censoringType !== '') params.censoringType = censoringType;
-    if (startDate) params.startDate = startDate;
-    if (endDate) params.endDate = endDate;
+        let url = `${API_BASE_URL}/api/testdata?pageIndex=1&pageSize=20`;
+        if (queryModuleId) url += `&moduleId=${queryModuleId}`;
+        if (queryTestType) url += `&testType=${queryTestType}`;
+        if (queryCensoringType) url += `&censoringType=${queryCensoringType}`;
 
-    return params;
-};
+        console.log('🔍 查询 URL:', url);
 
-// 渲染数据表格
-const renderDataTable = (data) => {
-    const tbody = document.getElementById('dataTableBody');
+        const response = await fetch(url);
+        const result = await response.json();
+
+        if (result.success) {
+            renderTestDataList(result.data);
+        } else {
+            alert('查询失败: ' + result.message);
+        }
+    } catch (error) {
+        console.error('❌ 查询失败:', error);
+        alert('查询失败: ' + error.message);
+    }
+}
+
+// ==========================================
+// 渲染测试数据列表
+// ==========================================
+function renderTestDataList(data) {
+    const tbody = document.getElementById('testDataList');
+    if (!tbody) return;
+
+    tbody.innerHTML = '';
 
     if (!data || data.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="10" class="no-data">暂无数据</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;">暂无数据</td></tr>';
         return;
     }
 
-    tbody.innerHTML = data.map(item => `
-        <tr>
+    data.forEach(item => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
             <td>${item.testId}</td>
             <td>${item.moduleCode} - ${item.moduleName}</td>
-            <td>${formatDateTime(item.testTime)}</td>
+            <td>${new Date(item.testTime).toLocaleString('zh-CN')}</td>
+            <td>${item.testValue}</td>
             <td>${item.testType}</td>
-            <td><span class="censoring-badge censoring-${item.censoringType}">${getCensoringTypeName(item.censoringType)}</span></td>
-            <td>${item.failureTime ? item.failureTime.toFixed(2) : '-'}</td>
-            <td>${item.failureMode || '-'}</td>
-            <td>${item.temperature ? item.temperature.toFixed(1) : '-'}</td>
-            <td>${item.humidity ? item.humidity.toFixed(1) : '-'}</td>
+            <td>${getCensoringTypeName(item.censoringType)}</td>
+            <td>${item.quantity}</td>
+            <td>${item.failureTime || '-'}</td>
+            <td>${item.operator || '-'}</td>
             <td>
-                <button class="btn btn-edit" onclick="editData(${item.testId})"><\/button>
-                <button class="btn btn-danger" onclick="deleteData(${item.testId})"><\/button>
+                <button onclick="deleteTestData(${item.testId})">删除</button>
             </td>
-        </tr>
-    `).join('');
-};
-
-// 渲染分页
-const renderPagination = (totalCount, currentPage) => {
-    const totalPages = Math.ceil(totalCount / pageSize);
-    const pagination = document.getElementById('pagination');
-
-    if (totalPages <= 1) {
-        pagination.innerHTML = '';
-        return;
-    }
-
-    pagination.innerHTML = `
-        <button ${currentPage === 1 ? 'disabled' : ''} onclick="loadTestData(${currentPage - 1})">上一页</button>
-        <span class="page-info">第 ${currentPage} / ${totalPages} 页 (共 ${totalCount} 条)</span>
-        <button ${currentPage === totalPages ? 'disabled' : ''} onclick="loadTestData(${currentPage + 1})">下一页</button>
-    `;
-};
-
-// 绑定事件
-const bindEvents = () => {
-    // 表单提交
-    document.getElementById('testDataForm').addEventListener('submit', handleFormSubmit);
-
-    // 查询表单提交
-    document.getElementById('queryForm').addEventListener('submit', (e) => {
-        e.preventDefault();
-        loadTestData(1);
+        `;
+        tbody.appendChild(row);
     });
+}
 
-    // 删失类型变化
-    document.getElementById('censoringType').addEventListener('change', updateCensoringTypeHelp);
-
-    // 取消编辑
-    document.getElementById('cancelBtn').addEventListener('click', resetForm);
-};
-
-// 处理表单提交
-const handleFormSubmit = async (e) => {
-    e.preventDefault();
-
-    const formData = getFormData();
-
-    // 验证表单
-    if (!validateForm(formData)) {
+// ==========================================
+// 删除测试数据
+// ==========================================
+async function deleteTestData(testId) {
+    if (!confirm('确定要删除这条数据吗?')) {
         return;
     }
 
-    showLoading(true);
     try {
-        let response;
-        if (isEditMode) {
-            response = await fetch(`${API_BASE_URL}/TestData/${formData.testId}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(formData)
-            });
-        } else {
-            response = await fetch(`${API_BASE_URL}/TestData`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(formData)
-            });
-        }
-
-        const result = await response.json();
-
-        if (result.success) {
-            showMessage(isEditMode ? '更新成功' : '数据录入成功', 'success');
-            resetForm();
-            await loadTestData(currentPage);
-        } else {
-            showMessage(result.message, 'error');
-        }
-    } catch (error) {
-        showMessage('操作失败', 'error');
-        console.error(error);
-    } finally {
-        showLoading(false);
-    }
-};
-
-// 获取表单数据
-const getFormData = () => {
-    const censoringType = parseInt(document.getElementById('censoringType').value);
-    const testId = document.getElementById('testId').value;
-
-    const data = {
-        moduleId: parseInt(document.getElementById('moduleId').value),
-        testTime: document.getElementById('testTime').value,
-        testValue: parseFloat(document.getElementById('testValue').value),
-        testUnit: document.getElementById('testUnit').value || 'hours',
-        testType: document.getElementById('testType').value,
-        quantity: parseInt(document.getElementById('quantity').value),
-        censoringType: censoringType,
-        failureTime: parseFloat(document.getElementById('failureTime').value) || null,
-        lastInspectionTime: censoringType === 2 ? parseFloat(document.getElementById('lastInspectionTime').value) || 0 : 0,
-        failureMode: document.getElementById('failureMode').value || null,
-        subsetId: document.getElementById('subsetId').value || null,
-        temperature: parseFloat(document.getElementById('temperature').value) || null,
-        humidity: parseFloat(document.getElementById('humidity').value) || null,
-        operator: document.getElementById('operator').value || null,
-        testCycle: parseInt(document.getElementById('testCycle').value) || null,
-        remarks: document.getElementById('remarks').value || null
-    };
-
-    if (testId) {
-        data.testId = parseInt(testId);
-    }
-
-    return data;
-};
-
-// 验证表单
-const validateForm = (data) => {
-    if (!data.moduleId) {
-        showMessage('请选择模组', 'warning');
-        return false;
-    }
-
-    if (!data.failureTime) {
-        showMessage('请输入失效时间', 'warning');
-        return false;
-    }
-
-    if (data.censoringType === 2) {
-        if (!data.lastInspectionTime || data.lastInspectionTime <= 0) {
-            showMessage('区间删失数据必须提供前次检测时间', 'warning');
-            return false;
-        }
-        if (data.failureTime <= data.lastInspectionTime) {
-            showMessage('失效时间必须大于前次检测时间', 'warning');
-            return false;
-        }
-    }
-
-    if (data.humidity !== null && (data.humidity < 0 || data.humidity > 100)) {
-        showMessage('湿度必须在0-100之间', 'warning');
-        return false;
-    }
-
-    return true;
-};
-
-// 编辑数据
-const editData = async (testId) => {
-    showLoading(true);
-    try {
-        const response = await fetch(`${API_BASE_URL}/TestData/${testId}`);
-        const result = await response.json();
-
-        if (result.success) {
-            fillForm(result.data);
-            isEditMode = true;
-            document.getElementById('submitText').textContent = '💾 更新数据';
-            document.getElementById('cancelBtn').style.display = 'inline-block';
-            document.getElementById('formSection').scrollIntoView({ behavior: 'smooth' });
-        } else {
-            showMessage(result.message, 'error');
-        }
-    } catch (error) {
-        showMessage('加载数据失败', 'error');
-        console.error(error);
-    } finally {
-        showLoading(false);
-    }
-};
-
-// 填充表单
-const fillForm = (data) => {
-    document.getElementById('testId').value = data.testId;
-    document.getElementById('moduleId').value = data.moduleId;
-    document.getElementById('testTime').value = formatDateTimeForInput(data.testTime);
-    document.getElementById('testValue').value = data.testValue;
-    document.getElementById('testUnit').value = data.testUnit || 'hours';
-    document.getElementById('testType').value = data.testType;
-    document.getElementById('quantity').value = data.quantity;
-    document.getElementById('censoringType').value = data.censoringType;
-    document.getElementById('failureTime').value = data.failureTime;
-    document.getElementById('lastInspectionTime').value = data.lastInspectionTime || 0;
-    document.getElementById('failureMode').value = data.failureMode || '';
-    document.getElementById('subsetId').value = data.subsetId || '';
-    document.getElementById('temperature').value = data.temperature || '';
-    document.getElementById('humidity').value = data.humidity || '';
-    document.getElementById('operator').value = data.operator || '';
-    document.getElementById('testCycle').value = data.testCycle || '';
-    document.getElementById('remarks').value = data.remarks || '';
-
-    updateCensoringTypeHelp();
-};
-
-// 删除数据
-const deleteData = async (testId) => {
-    if (!confirm('确认删除该条数据吗？')) {
-        return;
-    }
-
-    showLoading(true);
-    try {
-        const response = await fetch(`${API_BASE_URL}/TestData/${testId}`, {
+        const response = await fetch(`${API_BASE_URL}/api/testdata/${testId}`, {
             method: 'DELETE'
         });
+
         const result = await response.json();
 
         if (result.success) {
-            showMessage('删除成功', 'success');
-            await loadTestData(currentPage);
+            alert('删除成功');
+            queryTestData();
         } else {
-            showMessage(result.message, 'error');
+            alert('删除失败: ' + result.message);
         }
     } catch (error) {
-        showMessage('删除失败', 'error');
-        console.error(error);
-    } finally {
-        showLoading(false);
+        console.error('❌ 删除失败:', error);
+        alert('删除失败: ' + error.message);
     }
-};
+}
 
-// 重置表单
-const resetForm = () => {
-    document.getElementById('testDataForm').reset();
-    document.getElementById('testId').value = '';
-    document.getElementById('testUnit').value = 'hours';
-    document.getElementById('quantity').value = 1;
-    document.getElementById('lastInspectionTime').value = 0;
-    isEditMode = false;
-    document.getElementById('submitText').textContent = '💾 保存数据';
-    document.getElementById('cancelBtn').style.display = 'none';
-    updateCensoringTypeHelp();
-};
-
-// 更新删失类型帮助信息
-const updateCensoringTypeHelp = () => {
-    const censoringType = parseInt(document.getElementById('censoringType').value);
-    const helpText = document.getElementById('censoringHelp');
-    const failureTimeLabel = document.getElementById('failureTimeLabel');
-    const lastInspectionGroup = document.getElementById('lastInspectionGroup');
-    const lastInspectionInput = document.getElementById('lastInspectionTime');
-
-    const helpTexts = {
-        0: '完全数据: 观察到精确失效时间',
-        1: '右删失数据: 样本在测试结束时仍未失效(悬置)',
-        2: '区间删失数据: 只知道失效发生在两次检测之间',
-        3: '左删失数据: 首次检测时已经失效'
-    };
-
-    const labelTexts = {
-        0: '失效时间(小时)',
-        1: '截止时间(小时)',
-        2: '失效时间上界(小时)',
-        3: '首次检测时间(小时)'
-    };
-
-    helpText.textContent = helpTexts[censoringType];
-    failureTimeLabel.innerHTML = `${labelTexts[censoringType]} <span class="required">*</span>`;
-
-    // 显示/隐藏前次检测时间字段
-    if (censoringType === 2) {
-        lastInspectionGroup.style.display = 'block';
-        lastInspectionInput.required = true;
-    } else {
-        lastInspectionGroup.style.display = 'none';
-        lastInspectionInput.required = false;
-        lastInspectionInput.value = 0;
-    }
-};
-
+// ==========================================
 // 工具函数
-const showLoading = (show) => {
-    document.getElementById('loading').style.display = show ? 'flex' : 'none';
-};
-
-const showMessage = (message, type = 'success') => {
-    const messageDiv = document.getElementById('message');
-    messageDiv.textContent = message;
-    messageDiv.className = `message ${type}`;
-    messageDiv.style.display = 'block';
-
-    setTimeout(() => {
-        messageDiv.style.display = 'none';
-    }, 3000);
-};
-
-const formatDateTime = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleString('zh-CN', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit'
-    });
-};
-
-const formatDateTimeForInput = (dateString) => {
-    const date = new Date(dateString);
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    const hours = String(date.getHours()).padStart(2, '0');
-    const minutes = String(date.getMinutes()).padStart(2, '0');
-    return `${year}-${month}-${day}T${hours}:${minutes}`;
-};
-
-const getCensoringTypeName = (type) => {
+// ==========================================
+function getCensoringTypeName(type) {
     const names = {
         0: '完全数据',
         1: '右删失',
@@ -424,7 +298,4 @@ const getCensoringTypeName = (type) => {
         3: '左删失'
     };
     return names[type] || '未知';
-};
-
-// 页面加载完成后初始化
-window.addEventListener('DOMContentLoaded', init);
+}

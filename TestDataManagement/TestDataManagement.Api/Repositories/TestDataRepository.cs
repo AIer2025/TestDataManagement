@@ -199,7 +199,7 @@ public class TestDataRepository : ITestDataRepository
             FROM tb_test_data td
             INNER JOIN tb_module m ON td.module_id = m.module_id
             {whereClause}
-            ORDER BY td.test_time DESC
+            ORDER BY td.test_time ASC
             LIMIT @Limit OFFSET @Offset";
 
         await using var connection = new MySqlConnection(_connectionString);

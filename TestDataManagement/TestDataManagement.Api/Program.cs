@@ -8,14 +8,14 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// 注册数据库连接字符串
-var connectionString = builder.Configuration.GetConnectionString("MySqlConnection");
-builder.Services.AddSingleton(connectionString!);
+// 获取数据库连接字符串
+var connectionString = builder.Configuration.GetConnectionString("MySqlConnection") 
+    ?? throw new InvalidOperationException("Connection string 'MySqlConnection' not found.");
 
-// 注册仓储和服务
-builder.Services.AddScoped<ITestDataRepository, TestDataRepository>();
+// 注册仓储和服务 - 使用工厂方法正确注入连接字符串
+builder.Services.AddScoped<ITestDataRepository>(sp => new TestDataRepository(connectionString));
 builder.Services.AddScoped<ITestDataService, TestDataService>();
-builder.Services.AddScoped<IModuleRepository, ModuleRepository>();
+builder.Services.AddScoped<IModuleRepository>(sp => new ModuleRepository(connectionString));
 builder.Services.AddScoped<IModuleService, ModuleService>();
 
 // 配置CORS

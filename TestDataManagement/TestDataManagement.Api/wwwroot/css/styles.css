@@ -344,6 +344,50 @@ tbody tr:hover {
     background: #f39c12;
 }
 
+.message.info {
+    background: #3498db;
+}
+
+.message-success { background: #27ae60; }
+.message-error { background: #e74c3c; }
+.message-warning { background: #f39c12; }
+.message-info { background: #3498db; }
+
+/* Badge 样式 */
+.badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 0.85em;
+    font-weight: 600;
+}
+
+.badge-success { background: #27ae60; color: white; }
+.badge-warning { background: #e67e22; color: white; }
+.badge-info { background: #3498db; color: white; }
+.badge-primary { background: #9b59b6; color: white; }
+.badge-secondary { background: #95a5a6; color: white; }
+
+/* 操作按钮样式 */
+.action-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-sm {
+    padding: 6px 12px;
+    font-size: 0.85em;
+}
+
+.btn-info {
+    background: #3498db;
+    color: white;
+}
+
+.btn-info:hover {
+    background: #2980b9;
+}
+
 /* 页脚样式 */
 footer {
     background: #f8f9fa;

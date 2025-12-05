@@ -330,7 +330,7 @@ async function queryTestData() {
         const startDate = document.getElementById('startDate')?.value || '';
         const endDate = document.getElementById('endDate')?.value || '';
 
-        let url = `${API_BASE_URL}/api/testdata?pageIndex=1&pageSize=50`;
+        let url = `${API_BASE_URL}/api/testdata?pageIndex=1&pageSize=10000`;
         if (queryModuleId) url += `&moduleId=${queryModuleId}`;
         if (queryTestType) url += `&testType=${queryTestType}`;
         if (queryCensoringType !== '') url += `&censoringType=${queryCensoringType}`;

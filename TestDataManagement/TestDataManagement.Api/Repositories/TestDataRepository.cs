@@ -281,8 +281,9 @@ public class TestDataRepository : ITestDataRepository
             LastInspectionTime = reader.IsDBNull(reader.GetOrdinal("last_inspection_time")) ? null : reader.GetDecimal("last_inspection_time"),
             FailureMode = reader.IsDBNull(reader.GetOrdinal("failure_mode")) ? null : reader.GetString("failure_mode"),
             SubsetId = reader.IsDBNull(reader.GetOrdinal("subset_id")) ? null : reader.GetString("subset_id"),
-            IsCensored = reader.GetBoolean("is_censored"),
-            CensoringType = reader.GetInt32("censoring_type"),
+            // 修复：使用GetByte读取tinyint(1)类型，避免被误读为布尔值
+            IsCensored = reader.GetByte("is_censored") != 0,
+            CensoringType = reader.GetByte("censoring_type"),
             StateFlag = reader.GetChar("state_flag"),
             Temperature = reader.IsDBNull(reader.GetOrdinal("temperature")) ? null : reader.GetDecimal("temperature"),
             Humidity = reader.IsDBNull(reader.GetOrdinal("humidity")) ? null : reader.GetDecimal("humidity"),

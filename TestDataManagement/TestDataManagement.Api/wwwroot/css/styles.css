@@ -239,37 +239,110 @@ tbody tr:hover {
 
 /* 分页样式 */
 .pagination {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-    margin-top: 20px;
+    margin-top: 25px;
+    padding-top: 20px;
+    border-top: 1px solid #e0e0e0;
 }
 
-.pagination button {
-    padding: 8px 16px;
+.pagination-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+.pagination-info {
+    color: #555;
+    font-size: 0.95em;
+}
+
+.pagination-info .current-page {
+    font-weight: 700;
+    color: #667eea;
+    font-size: 1.1em;
+}
+
+.pagination-info .total-pages {
+    font-weight: 600;
+    color: #333;
+}
+
+.pagination-info .total-count {
+    font-weight: 700;
+    color: #27ae60;
+}
+
+.pagination-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-page {
+    padding: 8px 14px;
     border: 2px solid #667eea;
     background: white;
     color: #667eea;
     border-radius: 6px;
     cursor: pointer;
     font-weight: 600;
-    transition: all 0.3s;
+    font-size: 0.9em;
+    transition: all 0.2s ease;
+    white-space: nowrap;
 }
 
-.pagination button:hover:not(:disabled) {
+.btn-page:hover:not(:disabled) {
     background: #667eea;
     color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
 }
 
-.pagination button:disabled {
+.btn-page:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.btn-page:disabled {
     opacity: 0.4;
     cursor: not-allowed;
+    border-color: #ccc;
+    color: #999;
 }
 
-.pagination .page-info {
-    color: #555;
+.page-input-group {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin: 0 5px;
+}
+
+.page-input {
+    width: 60px;
+    padding: 8px 10px;
+    border: 2px solid #ddd;
+    border-radius: 6px;
+    text-align: center;
+    font-size: 0.95em;
     font-weight: 600;
+    transition: border-color 0.2s;
+}
+
+.page-input:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+.btn-go {
+    background: #667eea;
+    color: white;
+    border-color: #667eea;
+}
+
+.btn-go:hover {
+    background: #5a67d8;
+    border-color: #5a67d8;
 }
 
 /* 加载提示 */
@@ -429,5 +502,20 @@ footer {
 
     th, td {
         padding: 10px;
+    }
+    
+    /* 响应式分页 */
+    .pagination-buttons {
+        gap: 5px;
+    }
+    
+    .btn-page {
+        padding: 6px 10px;
+        font-size: 0.8em;
+    }
+    
+    .page-input {
+        width: 50px;
+        padding: 6px 8px;
     }
 }

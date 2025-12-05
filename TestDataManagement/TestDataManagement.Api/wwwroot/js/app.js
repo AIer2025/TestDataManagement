@@ -4,6 +4,14 @@
 const API_BASE_URL = '';  // 使用相对路径，自动适应当前host
 
 // ==========================================
+// 分页配置和状态
+// ==========================================
+const PAGE_SIZE = 20;  // 每页显示条数
+let allData = [];      // 存储所有查询结果
+let currentPage = 1;   // 当前页码
+let totalPages = 0;    // 总页数
+
+// ==========================================
 // 页面加载完成后初始化
 // ==========================================
 document.addEventListener('DOMContentLoaded', function() {
@@ -337,8 +345,17 @@ async function queryTestData() {
         console.log('📡 查询结果:', result);
 
         if (result.success) {
-            renderTestDataList(result.data);
-            showMessage(`查询成功，共 ${result.totalCount || result.data?.length || 0} 条数据`, 'success');
+            // 保存所有数据到全局变量
+            allData = result.data || [];
+            totalPages = Math.ceil(allData.length / PAGE_SIZE);
+            currentPage = 1;  // 重置到第一页
+            
+            // 渲染当前页数据
+            renderCurrentPage();
+            // 渲染分页控件
+            renderPagination();
+            
+            showMessage(`查询成功，共 ${allData.length} 条数据，${totalPages} 页`, 'success');
         } else {
             showMessage('查询失败: ' + result.message, 'error');
         }
@@ -543,4 +560,129 @@ function showMessage(text, type = 'info') {
     setTimeout(() => {
         messageDiv.style.display = 'none';
     }, 3000);
+}
+
+// ==========================================
+// 分页功能
+// ==========================================
+
+// 渲染当前页数据
+function renderCurrentPage() {
+    const startIndex = (currentPage - 1) * PAGE_SIZE;
+    const endIndex = startIndex + PAGE_SIZE;
+    const pageData = allData.slice(startIndex, endIndex);
+    renderTestDataList(pageData);
+}
+
+// 渲染分页控件
+function renderPagination() {
+    const paginationDiv = document.getElementById('pagination');
+    if (!paginationDiv) return;
+
+    if (totalPages <= 1) {
+        paginationDiv.innerHTML = '';
+        return;
+    }
+
+    paginationDiv.innerHTML = `
+        <div class="pagination-container">
+            <div class="pagination-info">
+                第 <span class="current-page">${currentPage}</span> / <span class="total-pages">${totalPages}</span> 页，
+                共 <span class="total-count">${allData.length}</span> 条数据
+            </div>
+            <div class="pagination-buttons">
+                <button class="btn btn-page" onclick="goToPage(1)" ${currentPage === 1 ? 'disabled' : ''} title="首页">
+                    ⏮ 首页
+                </button>
+                <button class="btn btn-page" onclick="prevPages(10)" ${currentPage <= 10 ? 'disabled' : ''} title="向前10页">
+                    ⏪ 前10页
+                </button>
+                <button class="btn btn-page" onclick="prevPage()" ${currentPage === 1 ? 'disabled' : ''} title="上一页">
+                    ◀ 上1页
+                </button>
+                <span class="page-input-group">
+                    <input type="number" id="pageInput" class="page-input" min="1" max="${totalPages}" value="${currentPage}" 
+                           onkeypress="if(event.key==='Enter') goToInputPage()">
+                    <button class="btn btn-page btn-go" onclick="goToInputPage()">跳转</button>
+                </span>
+                <button class="btn btn-page" onclick="nextPage()" ${currentPage === totalPages ? 'disabled' : ''} title="下一页">
+                    下1页 ▶
+                </button>
+                <button class="btn btn-page" onclick="nextPages(10)" ${currentPage > totalPages - 10 ? 'disabled' : ''} title="向后10页">
+                    后10页 ⏩
+                </button>
+                <button class="btn btn-page" onclick="goToPage(${totalPages})" ${currentPage === totalPages ? 'disabled' : ''} title="末页">
+                    末页 ⏭
+                </button>
+            </div>
+        </div>
+    `;
+}
+
+// 上一页
+function prevPage() {
+    if (currentPage > 1) {
+        currentPage--;
+        renderCurrentPage();
+        renderPagination();
+        scrollToTable();
+    }
+}
+
+// 下一页
+function nextPage() {
+    if (currentPage < totalPages) {
+        currentPage++;
+        renderCurrentPage();
+        renderPagination();
+        scrollToTable();
+    }
+}
+
+// 向前翻N页
+function prevPages(n) {
+    currentPage = Math.max(1, currentPage - n);
+    renderCurrentPage();
+    renderPagination();
+    scrollToTable();
+}
+
+// 向后翻N页
+function nextPages(n) {
+    currentPage = Math.min(totalPages, currentPage + n);
+    renderCurrentPage();
+    renderPagination();
+    scrollToTable();
+}
+
+// 跳转到指定页
+function goToPage(page) {
+    if (page >= 1 && page <= totalPages) {
+        currentPage = page;
+        renderCurrentPage();
+        renderPagination();
+        scrollToTable();
+    }
+}
+
+// 从输入框跳转
+function goToInputPage() {
+    const input = document.getElementById('pageInput');
+    if (input) {
+        const page = parseInt(input.value);
+        if (!isNaN(page) && page >= 1 && page <= totalPages) {
+            goToPage(page);
+        } else {
+            showMessage(`请输入1到${totalPages}之间的页码`, 'warning');
+            input.value = currentPage;
+        }
+    }
+}
+
+// 滚动到表格位置
+function scrollToTable() {
+    const dataSection = document.getElementById('dataSection');
+    if (dataSection) {
+        dataSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
 }

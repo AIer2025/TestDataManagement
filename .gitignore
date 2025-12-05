@@ -52,3 +52,22 @@ CodeCoverage/
 *.VisualState.xml
 TestResult.xml
 nunit-*.xml
+
+### JetBrains Rider 和 ReSharper ###
+# Rider 和 ReSharper 生成的用户特定文件
+
+# ReSharper 缓存
+_ReSharper*/
+*.[Rr]e[Ss]harper
+*.DotSettings.user
+
+# Rider
+# .idea 文件夹本身应该被跟踪 (用于共享设置, 如运行配置)
+# 但以下文件是用户特定的，应该被忽略
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/usage.statistics.xml
+.idea/shelf/
+.idea/vcs.xml
+.idea/httpRequests/
+

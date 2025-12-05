@@ -16,9 +16,28 @@ public class TestDataRepository : ITestDataRepository
     public async Task<long> CreateAsync(TestDataCreateDto dto)
     {
         // 根据删失类型自动设置关联字段
+        // censoring_type: 0=完全数据, 1=右删失, 2=区间删失, 3=左删失
+        // is_censored: 只有右删失(1)时为true
+        // state_flag: 只有右删失(1)时为'S'(Suspension), 其他都是'F'(Failure)
+        // last_inspection_time: 只有区间删失(2)时才需要>0的值
         var isCensored = dto.CensoringType == 1;
         var stateFlag = dto.CensoringType == 1 ? 'S' : 'F';
-        var lastInspectionTime = dto.CensoringType == 2 ? dto.LastInspectionTime : 0;
+        
+        // 区间删失时使用传入的LastInspectionTime，其他类型强制为0
+        decimal? lastInspectionTime;
+        if (dto.CensoringType == 2)
+        {
+            // 区间删失必须有有效的下界值
+            lastInspectionTime = dto.LastInspectionTime ?? 0;
+            if (lastInspectionTime <= 0)
+            {
+                throw new ArgumentException("区间删失数据的前次检测时间(last_inspection_time)必须大于0");
+            }
+        }
+        else
+        {
+            lastInspectionTime = 0;
+        }
 
         const string sql = @"
             INSERT INTO tb_test_data (
@@ -64,9 +83,28 @@ public class TestDataRepository : ITestDataRepository
     public async Task<bool> UpdateAsync(TestDataUpdateDto dto)
     {
         // 根据删失类型自动设置关联字段
+        // censoring_type: 0=完全数据, 1=右删失, 2=区间删失, 3=左删失
+        // is_censored: 只有右删失(1)时为true
+        // state_flag: 只有右删失(1)时为'S'(Suspension), 其他都是'F'(Failure)
+        // last_inspection_time: 只有区间删失(2)时才需要>0的值
         var isCensored = dto.CensoringType == 1;
         var stateFlag = dto.CensoringType == 1 ? 'S' : 'F';
-        var lastInspectionTime = dto.CensoringType == 2 ? dto.LastInspectionTime : 0;
+        
+        // 区间删失时使用传入的LastInspectionTime，其他类型强制为0
+        decimal? lastInspectionTime;
+        if (dto.CensoringType == 2)
+        {
+            // 区间删失必须有有效的下界值
+            lastInspectionTime = dto.LastInspectionTime ?? 0;
+            if (lastInspectionTime <= 0)
+            {
+                throw new ArgumentException("区间删失数据的前次检测时间(last_inspection_time)必须大于0");
+            }
+        }
+        else
+        {
+            lastInspectionTime = 0;
+        }
 
         const string sql = @"
             UPDATE tb_test_data SET
@@ -199,7 +237,7 @@ public class TestDataRepository : ITestDataRepository
             FROM tb_test_data td
             INNER JOIN tb_module m ON td.module_id = m.module_id
             {whereClause}
-            ORDER BY td.test_time ASC
+            ORDER BY td.test_time DESC
             LIMIT @Limit OFFSET @Offset";
 
         await using var connection = new MySqlConnection(_connectionString);

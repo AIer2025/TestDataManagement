@@ -348,14 +348,14 @@ async function queryTestData() {
             // 保存所有数据到全局变量
             allData = result.data || [];
             totalPages = Math.ceil(allData.length / PAGE_SIZE);
-            currentPage = totalPages > 0 ? totalPages : 1;  // 默认跳到最后一页（显示最新数据）
+            currentPage = 1;  // 重置到第一页
             
             // 渲染当前页数据
             renderCurrentPage();
             // 渲染分页控件
             renderPagination();
             
-            showMessage(`查询成功，共 ${allData.length} 条数据，${totalPages} 页，当前显示第 ${currentPage} 页`, 'success');
+            showMessage(`查询成功，共 ${allData.length} 条数据，${totalPages} 页`, 'success');
         } else {
             showMessage('查询失败: ' + result.message, 'error');
         }

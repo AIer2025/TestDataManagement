@@ -10,4 +10,6 @@ public interface ITestDataService
     Task<TestData?> GetTestDataByIdAsync(long testId);
     Task<(List<TestData> Items, int TotalCount)> GetTestDataListAsync(TestDataQuery query);
     bool ValidateTestData(TestDataCreateDto dto, out string errorMessage);
+    Task<List<TestOperator>> GetOperatorsAsync();
+    Task<List<TestSubset>> GetSubsetsAsync();
 }

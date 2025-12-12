@@ -44,12 +44,12 @@ public class TestDataRepository : ITestDataRepository
                 module_id, test_time, test_value, test_unit, test_type, 
                 test_cycle, quantity, failure_time, last_inspection_time, 
                 failure_mode, subset_id, is_censored, censoring_type, 
-                state_flag, temperature, humidity, operator, remarks
+                state_flag, temperature, humidity, id_operator, remarks
             ) VALUES (
                 @ModuleId, @TestTime, @TestValue, @TestUnit, @TestType,
                 @TestCycle, @Quantity, @FailureTime, @LastInspectionTime,
                 @FailureMode, @SubsetId, @IsCensored, @CensoringType,
-                @StateFlag, @Temperature, @Humidity, @Operator, @Remarks
+                @StateFlag, @Temperature, @Humidity, @IdOperator, @Remarks
             );
             SELECT LAST_INSERT_ID();";
 
@@ -62,19 +62,19 @@ public class TestDataRepository : ITestDataRepository
         command.Parameters.AddWithValue("@TestValue", dto.TestValue);
         command.Parameters.AddWithValue("@TestUnit", dto.TestUnit ?? "hours");
         command.Parameters.AddWithValue("@TestType", dto.TestType);
-        command.Parameters.AddWithValue("@TestCycle", (object?)dto.TestCycle ?? DBNull.Value);
+        command.Parameters.AddWithValue("@TestCycle", dto.TestCycle ?? 1);
         command.Parameters.AddWithValue("@Quantity", dto.Quantity);
         command.Parameters.AddWithValue("@FailureTime", (object?)dto.FailureTime ?? DBNull.Value);
         command.Parameters.AddWithValue("@LastInspectionTime", lastInspectionTime ?? 0);
         command.Parameters.AddWithValue("@FailureMode", (object?)dto.FailureMode ?? DBNull.Value);
-        command.Parameters.AddWithValue("@SubsetId", (object?)dto.SubsetId ?? DBNull.Value);
+        command.Parameters.AddWithValue("@SubsetId", dto.SubsetId);
         command.Parameters.AddWithValue("@IsCensored", isCensored);
         command.Parameters.AddWithValue("@CensoringType", dto.CensoringType);
         command.Parameters.AddWithValue("@StateFlag", stateFlag);
-        command.Parameters.AddWithValue("@Temperature", (object?)dto.Temperature ?? DBNull.Value);
-        command.Parameters.AddWithValue("@Humidity", (object?)dto.Humidity ?? DBNull.Value);
-        command.Parameters.AddWithValue("@Operator", (object?)dto.Operator ?? DBNull.Value);
-        command.Parameters.AddWithValue("@Remarks", (object?)dto.Remarks ?? DBNull.Value);
+        command.Parameters.AddWithValue("@Temperature", dto.Temperature ?? 20);
+        command.Parameters.AddWithValue("@Humidity", dto.Humidity ?? 60);
+        command.Parameters.AddWithValue("@IdOperator", dto.IdOperator);
+        command.Parameters.AddWithValue("@Remarks", dto.Remarks ?? "请输入备注说明~~~!!!");
 
         var result = await command.ExecuteScalarAsync();
         return Convert.ToInt64(result);
@@ -124,7 +124,7 @@ public class TestDataRepository : ITestDataRepository
                 state_flag = @StateFlag,
                 temperature = @Temperature,
                 humidity = @Humidity,
-                operator = @Operator,
+                id_operator = @IdOperator,
                 remarks = @Remarks
             WHERE test_id = @TestId";
 
@@ -138,19 +138,19 @@ public class TestDataRepository : ITestDataRepository
         command.Parameters.AddWithValue("@TestValue", dto.TestValue);
         command.Parameters.AddWithValue("@TestUnit", dto.TestUnit ?? "hours");
         command.Parameters.AddWithValue("@TestType", dto.TestType);
-        command.Parameters.AddWithValue("@TestCycle", (object?)dto.TestCycle ?? DBNull.Value);
+        command.Parameters.AddWithValue("@TestCycle", dto.TestCycle ?? 1);
         command.Parameters.AddWithValue("@Quantity", dto.Quantity);
         command.Parameters.AddWithValue("@FailureTime", (object?)dto.FailureTime ?? DBNull.Value);
         command.Parameters.AddWithValue("@LastInspectionTime", lastInspectionTime ?? 0);
         command.Parameters.AddWithValue("@FailureMode", (object?)dto.FailureMode ?? DBNull.Value);
-        command.Parameters.AddWithValue("@SubsetId", (object?)dto.SubsetId ?? DBNull.Value);
+        command.Parameters.AddWithValue("@SubsetId", dto.SubsetId);
         command.Parameters.AddWithValue("@IsCensored", isCensored);
         command.Parameters.AddWithValue("@CensoringType", dto.CensoringType);
         command.Parameters.AddWithValue("@StateFlag", stateFlag);
-        command.Parameters.AddWithValue("@Temperature", (object?)dto.Temperature ?? DBNull.Value);
-        command.Parameters.AddWithValue("@Humidity", (object?)dto.Humidity ?? DBNull.Value);
-        command.Parameters.AddWithValue("@Operator", (object?)dto.Operator ?? DBNull.Value);
-        command.Parameters.AddWithValue("@Remarks", (object?)dto.Remarks ?? DBNull.Value);
+        command.Parameters.AddWithValue("@Temperature", dto.Temperature ?? 20);
+        command.Parameters.AddWithValue("@Humidity", dto.Humidity ?? 60);
+        command.Parameters.AddWithValue("@IdOperator", dto.IdOperator);
+        command.Parameters.AddWithValue("@Remarks", dto.Remarks ?? "请输入备注说明~~~!!!");
 
         var rowsAffected = await command.ExecuteNonQueryAsync();
         return rowsAffected > 0;
@@ -173,9 +173,12 @@ public class TestDataRepository : ITestDataRepository
     public async Task<TestData?> GetByIdAsync(long testId)
     {
         const string sql = @"
-            SELECT td.*, m.module_name, m.module_code
+            SELECT td.*, m.module_name, m.module_code, 
+                   op.operator_name, ss.subset_name
             FROM tb_test_data td
             INNER JOIN tb_module m ON td.module_id = m.module_id
+            LEFT JOIN tb_test_operator op ON td.id_operator = op.id_operator
+            LEFT JOIN tb_test_subset ss ON td.subset_id = ss.subset_id
             WHERE td.test_id = @TestId";
 
         await using var connection = new MySqlConnection(_connectionString);
@@ -233,9 +236,12 @@ public class TestDataRepository : ITestDataRepository
         // 查询数据
         var offset = (query.PageIndex - 1) * query.PageSize;
         var dataSql = $@"
-            SELECT td.*, m.module_name, m.module_code
+            SELECT td.*, m.module_name, m.module_code,
+                   op.operator_name, ss.subset_name
             FROM tb_test_data td
             INNER JOIN tb_module m ON td.module_id = m.module_id
+            LEFT JOIN tb_test_operator op ON td.id_operator = op.id_operator
+            LEFT JOIN tb_test_subset ss ON td.subset_id = ss.subset_id
             {whereClause}
             ORDER BY td.test_time DESC
             LIMIT @Limit OFFSET @Offset";
@@ -280,18 +286,71 @@ public class TestDataRepository : ITestDataRepository
             FailureTime = reader.IsDBNull(reader.GetOrdinal("failure_time")) ? null : reader.GetDecimal("failure_time"),
             LastInspectionTime = reader.IsDBNull(reader.GetOrdinal("last_inspection_time")) ? null : reader.GetDecimal("last_inspection_time"),
             FailureMode = reader.IsDBNull(reader.GetOrdinal("failure_mode")) ? null : reader.GetString("failure_mode"),
-            SubsetId = reader.IsDBNull(reader.GetOrdinal("subset_id")) ? null : reader.GetString("subset_id"),
+            SubsetId = reader.IsDBNull(reader.GetOrdinal("subset_id")) ? 1 : reader.GetInt32("subset_id"),
             // 修复：使用GetByte读取tinyint(1)类型，避免被误读为布尔值
             IsCensored = reader.GetByte("is_censored") != 0,
             CensoringType = reader.GetByte("censoring_type"),
             StateFlag = reader.GetChar("state_flag"),
             Temperature = reader.IsDBNull(reader.GetOrdinal("temperature")) ? null : reader.GetDecimal("temperature"),
             Humidity = reader.IsDBNull(reader.GetOrdinal("humidity")) ? null : reader.GetDecimal("humidity"),
-            Operator = reader.IsDBNull(reader.GetOrdinal("operator")) ? null : reader.GetString("operator"),
+            IdOperator = reader.IsDBNull(reader.GetOrdinal("id_operator")) ? 1 : reader.GetInt32("id_operator"),
             Remarks = reader.IsDBNull(reader.GetOrdinal("remarks")) ? null : reader.GetString("remarks"),
             CreateTime = reader.GetDateTime("create_time"),
             ModuleName = reader.GetString("module_name"),
-            ModuleCode = reader.GetString("module_code")
+            ModuleCode = reader.GetString("module_code"),
+            OperatorName = reader.IsDBNull(reader.GetOrdinal("operator_name")) ? null : reader.GetString("operator_name"),
+            SubsetName = reader.IsDBNull(reader.GetOrdinal("subset_name")) ? null : reader.GetString("subset_name")
         };
+    }
+
+    // 获取所有操作员列表
+    public async Task<List<TestOperator>> GetOperatorsAsync()
+    {
+        const string sql = "SELECT id_operator, operator_name, operator_mobile, operator_mail, operator_department_id FROM tb_test_operator ORDER BY id_operator";
+        
+        var operators = new List<TestOperator>();
+        await using var connection = new MySqlConnection(_connectionString);
+        await connection.OpenAsync();
+        
+        await using var command = new MySqlCommand(sql, connection);
+        await using var reader = await command.ExecuteReaderAsync();
+        
+        while (await reader.ReadAsync())
+        {
+            operators.Add(new TestOperator
+            {
+                IdOperator = reader.GetInt32("id_operator"),
+                OperatorName = reader.GetString("operator_name"),
+                OperatorMobile = reader.IsDBNull(reader.GetOrdinal("operator_mobile")) ? null : reader.GetString("operator_mobile"),
+                OperatorMail = reader.IsDBNull(reader.GetOrdinal("operator_mail")) ? null : reader.GetString("operator_mail"),
+                OperatorDepartmentId = reader.IsDBNull(reader.GetOrdinal("operator_department_id")) ? null : reader.GetInt32("operator_department_id")
+            });
+        }
+        
+        return operators;
+    }
+
+    // 获取所有子集列表
+    public async Task<List<TestSubset>> GetSubsetsAsync()
+    {
+        const string sql = "SELECT subset_id, subset_name FROM tb_test_subset ORDER BY subset_id";
+        
+        var subsets = new List<TestSubset>();
+        await using var connection = new MySqlConnection(_connectionString);
+        await connection.OpenAsync();
+        
+        await using var command = new MySqlCommand(sql, connection);
+        await using var reader = await command.ExecuteReaderAsync();
+        
+        while (await reader.ReadAsync())
+        {
+            subsets.Add(new TestSubset
+            {
+                SubsetId = reader.GetInt32("subset_id"),
+                SubsetName = reader.GetString("subset_name")
+            });
+        }
+        
+        return subsets;
     }
 }

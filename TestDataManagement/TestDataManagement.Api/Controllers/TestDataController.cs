@@ -133,4 +133,40 @@ public class TestDataController : ControllerBase
             return StatusCode(500, ApiResponse<List<TestData>>.ErrorResult("服务器内部错误"));
         }
     }
+
+    /// <summary>
+    /// 获取所有操作员列表
+    /// </summary>
+    [HttpGet("operators")]
+    public async Task<ActionResult<ApiResponse<List<TestOperator>>>> GetOperators()
+    {
+        try
+        {
+            var operators = await _service.GetOperatorsAsync();
+            return Ok(ApiResponse<List<TestOperator>>.SuccessResult(operators));
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "获取操作员列表失败");
+            return StatusCode(500, ApiResponse<List<TestOperator>>.ErrorResult("服务器内部错误"));
+        }
+    }
+
+    /// <summary>
+    /// 获取所有子集列表
+    /// </summary>
+    [HttpGet("subsets")]
+    public async Task<ActionResult<ApiResponse<List<TestSubset>>>> GetSubsets()
+    {
+        try
+        {
+            var subsets = await _service.GetSubsetsAsync();
+            return Ok(ApiResponse<List<TestSubset>>.SuccessResult(subsets));
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "获取子集列表失败");
+            return StatusCode(500, ApiResponse<List<TestSubset>>.ErrorResult("服务器内部错误"));
+        }
+    }
 }

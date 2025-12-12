@@ -19,12 +19,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 加载模组列表（同时加载到录入和查询下拉框）
     loadModules();
-    
-    // 加载操作员列表
-    loadOperators();
-    
-    // 加载子集列表
-    loadSubsets();
 
     // 绑定删失类型切换事件
     const censoringTypeSelect = document.getElementById('censoringType');
@@ -139,96 +133,6 @@ async function loadModules() {
 }
 
 // ==========================================
-// 加载操作员列表
-// ==========================================
-async function loadOperators() {
-    try {
-        console.log('🔄 正在加载操作员列表...');
-
-        const response = await fetch(`${API_BASE_URL}/api/testdata/operators`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
-
-        if (!response.ok) {
-            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-        }
-
-        const result = await response.json();
-        console.log('✅ 操作员列表返回结果:', result);
-
-        const selectOperator = document.getElementById('idOperator');
-
-        if (selectOperator && result.success && result.data && Array.isArray(result.data)) {
-            selectOperator.innerHTML = '<option value="">请选择操作员</option>';
-            
-            result.data.forEach(op => {
-                const option = document.createElement('option');
-                option.value = op.idOperator;
-                option.textContent = op.operatorName;
-                selectOperator.appendChild(option);
-            });
-
-            // 设置默认选中第一个操作员（ID=1）
-            if (result.data.length > 0) {
-                selectOperator.value = '1';
-            }
-
-            console.log(`✅ 操作员列表加载成功，共 ${result.data.length} 个操作员`);
-        }
-    } catch (error) {
-        console.error('❌ 加载操作员列表失败:', error);
-    }
-}
-
-// ==========================================
-// 加载子集列表
-// ==========================================
-async function loadSubsets() {
-    try {
-        console.log('🔄 正在加载子集列表...');
-
-        const response = await fetch(`${API_BASE_URL}/api/testdata/subsets`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
-
-        if (!response.ok) {
-            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-        }
-
-        const result = await response.json();
-        console.log('✅ 子集列表返回结果:', result);
-
-        const selectSubset = document.getElementById('subsetId');
-
-        if (selectSubset && result.success && result.data && Array.isArray(result.data)) {
-            selectSubset.innerHTML = '<option value="">请选择子集</option>';
-            
-            result.data.forEach(subset => {
-                const option = document.createElement('option');
-                option.value = subset.subsetId;
-                option.textContent = subset.subsetName;
-                selectSubset.appendChild(option);
-            });
-
-            // 设置默认选中第一个子集（ID=1）
-            if (result.data.length > 0) {
-                selectSubset.value = '1';
-            }
-
-            console.log(`✅ 子集列表加载成功，共 ${result.data.length} 个子集`);
-        }
-    } catch (error) {
-        console.error('❌ 加载子集列表失败:', error);
-    }
-}
-
-// ==========================================
 // 删失类型切换处理
 // ==========================================
 function handleCensoringTypeChange() {
@@ -290,24 +194,21 @@ async function saveTestData() {
         const isEdit = testId && testId.length > 0;
 
         // 收集表单数据
-        const idOperatorValue = document.getElementById('idOperator').value;
-        const subsetIdValue = document.getElementById('subsetId').value;
-        
         const data = {
             moduleId: parseInt(document.getElementById('moduleId').value),
             testTime: document.getElementById('testTime').value,
             testValue: parseFloat(document.getElementById('testValue').value),  // 重要：添加testValue字段
             testUnit: document.getElementById('testUnit').value || 'hours',
             testType: document.getElementById('testType').value,
-            testCycle: parseInt(document.getElementById('testCycle').value) || 1,
+            testCycle: document.getElementById('testCycle').value ? parseInt(document.getElementById('testCycle').value) : null,
             quantity: parseInt(document.getElementById('quantity').value) || 1,
             censoringType: parseInt(document.getElementById('censoringType').value),
             failureMode: document.getElementById('failureMode').value || null,
-            subsetId: subsetIdValue ? parseInt(subsetIdValue) : 1,
-            temperature: parseFloat(document.getElementById('temperature').value) || 20,
-            humidity: parseFloat(document.getElementById('humidity').value) || 60,
-            idOperator: idOperatorValue ? parseInt(idOperatorValue) : 1,
-            remarks: document.getElementById('remarks').value || '请输入备注说明~~~!!!'
+            subsetId: document.getElementById('subsetId').value || null,
+            temperature: document.getElementById('temperature').value ? parseFloat(document.getElementById('temperature').value) : null,
+            humidity: document.getElementById('humidity').value ? parseFloat(document.getElementById('humidity').value) : null,
+            operator: document.getElementById('operator').value || null,
+            remarks: document.getElementById('remarks').value || null
         };
 
         // 根据删失类型添加时间字段
@@ -403,18 +304,6 @@ function resetForm() {
         now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
         testTimeInput.value = now.toISOString().slice(0, 16);
     }
-    
-    // 设置默认值
-    document.getElementById('temperature').value = 20;
-    document.getElementById('humidity').value = 60;
-    document.getElementById('testCycle').value = 1;
-    document.getElementById('remarks').value = '请输入备注说明~~~!!!';
-    
-    // 设置下拉菜单默认选中第一个有效选项（ID=1）
-    const idOperatorSelect = document.getElementById('idOperator');
-    const subsetIdSelect = document.getElementById('subsetId');
-    if (idOperatorSelect) idOperatorSelect.value = '1';
-    if (subsetIdSelect) subsetIdSelect.value = '1';
     
     // 重置删失类型显示
     handleCensoringTypeChange();
@@ -528,9 +417,6 @@ async function editTestData(testId) {
 
         if (result.success && result.data) {
             const data = result.data;
-            
-            console.log('📝 编辑数据:', data);
-            console.log('📝 idOperator:', data.idOperator, '子集ID:', data.subsetId);
 
             // 填充表单
             document.getElementById('testId').value = data.testId;
@@ -539,29 +425,17 @@ async function editTestData(testId) {
             document.getElementById('testValue').value = data.testValue;
             document.getElementById('testUnit').value = data.testUnit || 'hours';
             document.getElementById('testType').value = data.testType;
-            document.getElementById('testCycle').value = data.testCycle || 1;
+            document.getElementById('testCycle').value = data.testCycle || '';
             document.getElementById('quantity').value = data.quantity;
             document.getElementById('censoringType').value = data.censoringType;
             document.getElementById('failureTime').value = data.failureTime || '';
             document.getElementById('lastInspectionTime').value = data.lastInspectionTime || 0;
             document.getElementById('failureMode').value = data.failureMode || '';
-            document.getElementById('temperature').value = data.temperature || 20;
-            document.getElementById('humidity').value = data.humidity || 60;
-            document.getElementById('remarks').value = data.remarks || '请输入备注说明~~~!!!';
-            
-            // 设置下拉菜单值（转为字符串）
-            const subsetIdSelect = document.getElementById('subsetId');
-            const idOperatorSelect = document.getElementById('idOperator');
-            
-            if (subsetIdSelect) {
-                subsetIdSelect.value = String(data.subsetId || 1);
-                console.log('📝 设置子集ID:', subsetIdSelect.value);
-            }
-            
-            if (idOperatorSelect) {
-                idOperatorSelect.value = String(data.idOperator || 1);
-                console.log('📝 设置操作员ID:', idOperatorSelect.value);
-            }
+            document.getElementById('subsetId').value = data.subsetId || '';
+            document.getElementById('temperature').value = data.temperature || '';
+            document.getElementById('humidity').value = data.humidity || '';
+            document.getElementById('operator').value = data.operator || '';
+            document.getElementById('remarks').value = data.remarks || '';
 
             // 更新UI
             handleCensoringTypeChange();

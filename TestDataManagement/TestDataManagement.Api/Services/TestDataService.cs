@@ -121,4 +121,14 @@ public class TestDataService : ITestDataService
 
         return true;
     }
+
+    public async Task<List<TestOperator>> GetOperatorsAsync()
+    {
+        return await _repository.GetOperatorsAsync();
+    }
+
+    public async Task<List<TestSubset>> GetSubsetsAsync()
+    {
+        return await _repository.GetSubsetsAsync();
+    }
 }

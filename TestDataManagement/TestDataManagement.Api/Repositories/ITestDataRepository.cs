@@ -9,4 +9,6 @@ public interface ITestDataRepository
     Task<bool> DeleteAsync(long testId);
     Task<TestData?> GetByIdAsync(long testId);
     Task<(List<TestData> Items, int TotalCount)> GetListAsync(TestDataQuery query);
+    Task<List<TestOperator>> GetOperatorsAsync();
+    Task<List<TestSubset>> GetSubsetsAsync();
 }

@@ -4,6 +4,40 @@
 const API_BASE_URL = '';  // 使用相对路径，自动适应当前host
 
 // ==========================================
+// 测试类型配置 - 定义每种测试类型的默认值、单位和显示名称
+// ==========================================
+const TEST_TYPE_CONFIG = {
+    'LIFE_TEST': {
+        labelName: '额定寿命时间',
+        description: '产品在额定条件下的预期运行时间',
+        defaultValue: 1000,
+        defaultUnit: 'hours',
+        units: ['hours', 'cycles']
+    },
+    'STRESS_TEST': {
+        labelName: '应力水平值',
+        description: '施加的机械应力或电气应力强度',
+        defaultValue: 100,
+        defaultUnit: 'MPa',
+        units: ['MPa', 'N', 'V', 'A', 'W']
+    },
+    'BURN_IN': {
+        labelName: '老化温度/功率',
+        description: '加速老化测试时的温度或功率设定值',
+        defaultValue: 85,
+        defaultUnit: '℃',
+        units: ['℃', 'W', 'V']
+    },
+    'ENVIRONMENTAL': {
+        labelName: '环境应力值',
+        description: '温度、湿度或振动等环境条件参数',
+        defaultValue: 25,
+        defaultUnit: '℃',
+        units: ['℃', '%', 'Hz', 'rpm']
+    }
+};
+
+// ==========================================
 // 分页配置和状态
 // ==========================================
 const PAGE_SIZE = 20;  // 每页显示条数
@@ -32,6 +66,14 @@ document.addEventListener('DOMContentLoaded', function() {
         censoringTypeSelect.addEventListener('change', handleCensoringTypeChange);
         // 触发一次以设置初始状态
         handleCensoringTypeChange();
+    }
+
+    // 绑定测试类型切换事件
+    const testTypeSelect = document.getElementById('testType');
+    if (testTypeSelect) {
+        testTypeSelect.addEventListener('change', handleTestTypeChange);
+        // 触发一次以设置初始状态
+        handleTestTypeChange();
     }
 
     // 绑定数据录入表单提交事件
@@ -280,6 +322,58 @@ function handleCensoringTypeChange() {
 }
 
 // ==========================================
+// 处理测试类型变化 - 动态更新测试值字段
+// ==========================================
+function handleTestTypeChange(isEditMode = false) {
+    const testType = document.getElementById('testType').value;
+    const config = TEST_TYPE_CONFIG[testType];
+    
+    if (!config) return;
+    
+    // 更新标签名称和说明
+    const testValueLabel = document.getElementById('testValueLabel');
+    if (testValueLabel) {
+        testValueLabel.innerHTML = `${config.labelName} <span class="required">*</span>`;
+    }
+    
+    // 更新提示说明
+    const testValueHint = document.getElementById('testValueHint');
+    if (testValueHint) {
+        testValueHint.textContent = config.description;
+    }
+    
+    // 更新单位下拉菜单 - 高亮推荐单位
+    const testUnitSelect = document.getElementById('testUnit');
+    if (testUnitSelect) {
+        // 遍历所有选项，标记推荐单位
+        Array.from(testUnitSelect.options).forEach(option => {
+            if (config.units.includes(option.value)) {
+                option.style.fontWeight = 'bold';
+                option.style.color = '#4f46e5';
+            } else {
+                option.style.fontWeight = 'normal';
+                option.style.color = '#6b7280';
+            }
+        });
+        
+        // 如果不是编辑模式，设置默认单位
+        if (!isEditMode) {
+            testUnitSelect.value = config.defaultUnit;
+        }
+    }
+    
+    // 如果不是编辑模式，设置默认值
+    if (!isEditMode) {
+        const testValueInput = document.getElementById('testValue');
+        if (testValueInput) {
+            testValueInput.value = config.defaultValue;
+        }
+    }
+    
+    console.log(`📝 测试类型切换为: ${testType}, 标签: ${config.labelName}, 默认值: ${config.defaultValue} ${config.defaultUnit}`);
+}
+
+// ==========================================
 // 保存测试数据
 // ==========================================
 async function saveTestData() {
@@ -418,6 +512,9 @@ function resetForm() {
     
     // 重置删失类型显示
     handleCensoringTypeChange();
+    
+    // 重置测试类型并设置默认测试值和单位
+    handleTestTypeChange(false);
 }
 
 // ==========================================
@@ -531,14 +628,21 @@ async function editTestData(testId) {
             
             console.log('📝 编辑数据:', data);
             console.log('📝 idOperator:', data.idOperator, '子集ID:', data.subsetId);
+            console.log('📝 测试值:', data.testValue, '单位:', data.testUnit);
 
             // 填充表单
             document.getElementById('testId').value = data.testId;
             document.getElementById('moduleId').value = data.moduleId;
             document.getElementById('testTime').value = formatDateTimeForInput(data.testTime);
+            document.getElementById('testType').value = data.testType;
+            
+            // 先设置测试类型，再更新标签（编辑模式不覆盖值）
+            handleTestTypeChange(true);
+            
+            // 然后设置实际的测试值和单位（来自数据库）
             document.getElementById('testValue').value = data.testValue;
             document.getElementById('testUnit').value = data.testUnit || 'hours';
-            document.getElementById('testType').value = data.testType;
+            
             document.getElementById('testCycle').value = data.testCycle || 1;
             document.getElementById('quantity').value = data.quantity;
             document.getElementById('censoringType').value = data.censoringType;

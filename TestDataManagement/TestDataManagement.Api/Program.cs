@@ -9,7 +9,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 // 获取数据库连接字符串
-var connectionString = builder.Configuration.GetConnectionString("MySqlConnection") 
+var connectionString = builder.Configuration.GetConnectionString("MySqlConnection")
     ?? throw new InvalidOperationException("Connection string 'MySqlConnection' not found.");
 
 // 注册仓储和服务 - 使用工厂方法正确注入连接字符串
@@ -33,7 +33,7 @@ builder.Services.AddCors(options =>
 // 添加静态文件支持
 builder.Services.AddDirectoryBrowser();
 
-var app = builder.Build();
+var app = builder.Build(); //注释测试
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

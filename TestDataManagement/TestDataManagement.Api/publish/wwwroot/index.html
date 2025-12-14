@@ -35,12 +35,25 @@
 
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="testValue">测试值 <span class="required">*</span></label>
+                        <label for="testValue" id="testValueLabel">测试值 <span class="required">*</span></label>
                         <input type="number" id="testValue" name="testValue" step="0.0001" value="100" required>
+                        <small id="testValueHint" class="field-hint"></small>
                     </div>
                     <div class="form-group">
                         <label for="testUnit">单位</label>
-                        <input type="text" id="testUnit" name="testUnit" value="hours" placeholder="hours">
+                        <select id="testUnit" name="testUnit">
+                            <option value="hours">hours (小时)</option>
+                            <option value="cycles">cycles (循环次数)</option>
+                            <option value="℃">℃ (摄氏度)</option>
+                            <option value="V">V (伏特)</option>
+                            <option value="A">A (安培)</option>
+                            <option value="W">W (瓦特)</option>
+                            <option value="MPa">MPa (兆帕)</option>
+                            <option value="N">N (牛顿)</option>
+                            <option value="%">% (百分比)</option>
+                            <option value="Hz">Hz (赫兹)</option>
+                            <option value="rpm">rpm (转/分钟)</option>
+                        </select>
                     </div>
                 </div>
 
@@ -100,35 +113,39 @@
                     </div>
                     <div class="form-group">
                         <label for="subsetId">子集标识</label>
-                        <input type="text" id="subsetId" name="subsetId" placeholder="可选">
+                        <select id="subsetId" name="subsetId">
+                            <option value="">请选择子集</option>
+                        </select>
                     </div>
                 </div>
 
                 <div class="form-row">
                     <div class="form-group">
                         <label for="temperature">温度(℃)</label>
-                        <input type="number" id="temperature" name="temperature" step="0.01">
+                        <input type="number" id="temperature" name="temperature" step="1" value="20" min="-40" max="150">
                     </div>
                     <div class="form-group">
                         <label for="humidity">湿度(%)</label>
-                        <input type="number" id="humidity" name="humidity" step="0.01" min="0" max="100">
+                        <input type="number" id="humidity" name="humidity" step="1" value="60" min="0" max="100">
                     </div>
                 </div>
 
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="operator">操作员</label>
-                        <input type="text" id="operator" name="operator" placeholder="可选">
+                        <label for="idOperator">操作员</label>
+                        <select id="idOperator" name="idOperator">
+                            <option value="">请选择操作员</option>
+                        </select>
                     </div>
                     <div class="form-group">
                         <label for="testCycle">测试周期数</label>
-                        <input type="number" id="testCycle" name="testCycle">
+                        <input type="number" id="testCycle" name="testCycle" step="1" value="1" min="1">
                     </div>
                 </div>
 
                 <div class="form-group full-width">
                     <label for="remarks">备注</label>
-                    <textarea id="remarks" name="remarks" rows="3" placeholder="可选填写备注信息"></textarea>
+                    <textarea id="remarks" name="remarks" rows="3" placeholder="可选填写备注信息">请输入备注说明~~~!!!</textarea>
                 </div>
 
                 <div class="form-actions">
@@ -217,6 +234,108 @@
                 </table>
             </div>
             <div class="pagination" id="pagination"></div>
+        </section>
+
+        <!-- Weibull分析入口按钮 -->
+        <section class="card" id="weibullEntrySection">
+            <div class="weibull-entry-container">
+                <button type="button" class="btn btn-weibull" id="weibullAnalysisBtn" onclick="showWeibullAnalysisPage()">
+                    📈 Weibull 分析
+                </button>
+            </div>
+        </section>
+    </main>
+
+    <!-- ================= 模组 Weibull 分析页面 ================= -->
+    <main id="weibullAnalysisPage" style="display:none;">
+        <!-- 模组信息列表 -->
+        <section class="card" id="moduleListSection">
+            <h2>📊 模组 Weibull 分析</h2>
+            <div id="moduleTableContainer">
+                <table id="moduleTable" class="module-table">
+                    <thead>
+                    <tr>
+                        <th style="width:50px;">选择</th>
+                        <th>module_id</th>
+                        <th>module_code</th>
+                        <th>module_name</th>
+                    </tr>
+                    </thead>
+                    <tbody id="moduleTableBody">
+                    <tr>
+                        <td colspan="4" class="no-data">暂无数据</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- 分析按钮组 -->
+            <div class="weibull-action-buttons">
+                <button type="button" class="btn btn-primary" id="analyzeSelectedBtn" onclick="analyzeSelectedModule()">
+                    🔬 选定模组分析
+                </button>
+                <button type="button" class="btn btn-success" id="analyzeAllBtn" onclick="analyzeAllModules()">
+                    📊 所有模组分析
+                </button>
+                <button type="button" class="btn btn-secondary" id="returnDataEntryBtn" onclick="returnToDataEntry()">
+                    ↩️ 返回数据录入
+                </button>
+            </div>
+        </section>
+
+        <!-- 分析结果显示区域 -->
+        <section class="card" id="analysisResultSection" style="display:none;">
+            <h2>📈 Weibull 分析结果</h2>
+            
+            <!-- 分析图形显示 -->
+            <div id="weibullChartContainer" class="chart-container">
+                <img id="weibullChartImage" src="" alt="Weibull分析图形" style="max-width:100%; display:none;">
+                <div id="chartLoading" class="chart-loading">正在生成分析图形...</div>
+            </div>
+            
+            <!-- 分析报告表格 -->
+            <div id="analysisReportContainer" style="display:none;">
+                <h3>📋 分析报告</h3>
+                <div id="reportTableContainer">
+                    <table id="reportTable" class="report-table">
+                        <thead>
+                        <tr>
+                            <th>模组ID</th>
+                            <th>模组编码</th>
+                            <th>模组名称</th>
+                            <th>β (Beta)</th>
+                            <th>β 下限</th>
+                            <th>β 上限</th>
+                            <th>η (Eta)</th>
+                            <th>η 下限</th>
+                            <th>η 上限</th>
+                            <th>R²</th>
+                            <th>MTTF</th>
+                            <th>B10</th>
+                            <th>B50</th>
+                            <th>B90</th>
+                            <th>总样本</th>
+                            <th>完全数据</th>
+                            <th>右删失</th>
+                            <th>区间删失</th>
+                            <th>左删失</th>
+                        </tr>
+                        </thead>
+                        <tbody id="reportTableBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- 下载按钮 -->
+            <div class="download-buttons" id="downloadButtons" style="display:none;">
+                <a id="downloadChartBtn" href="#" class="btn btn-info" download>
+                    📥 下载分析图形
+                </a>
+                <a id="downloadReportBtn" href="#" class="btn btn-info" download>
+                    📥 下载Excel报告
+                </a>
+            </div>
         </section>
     </main>
 

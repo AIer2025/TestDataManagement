@@ -9,5 +9,9 @@
     <PackageReference Include="MySqlConnector" Version="2.3.5" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
     <PackageReference Include="Microsoft.AspNetCore.Cors" Version="2.2.0" />
+    <!-- Weibull 分析所需的包 -->
+    <PackageReference Include="ClosedXML" Version="0.102.2" />
+    <PackageReference Include="SkiaSharp" Version="2.88.7" />
+    <PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="2.88.7" />
 </ItemGroup>
 </Project>

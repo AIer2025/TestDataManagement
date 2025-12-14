@@ -18,6 +18,9 @@ builder.Services.AddScoped<ITestDataService, TestDataService>();
 builder.Services.AddScoped<IModuleRepository>(sp => new ModuleRepository(connectionString));
 builder.Services.AddScoped<IModuleService, ModuleService>();
 
+// 注册 Weibull 分析服务
+builder.Services.AddScoped<IWeibullAnalysisService, WeibullAnalysisService>();
+
 // 配置CORS
 builder.Services.AddCors(options =>
 {

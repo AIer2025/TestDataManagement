@@ -53,10 +53,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 加载模组列表（同时加载到录入和查询下拉框）
     loadModules();
-    
+
     // 加载操作员列表
     loadOperators();
-    
+
     // 加载子集列表
     loadSubsets();
 
@@ -205,7 +205,7 @@ async function loadOperators() {
 
         if (selectOperator && result.success && result.data && Array.isArray(result.data)) {
             selectOperator.innerHTML = '<option value="">请选择操作员</option>';
-            
+
             result.data.forEach(op => {
                 const option = document.createElement('option');
                 option.value = op.idOperator;
@@ -250,7 +250,7 @@ async function loadSubsets() {
 
         if (selectSubset && result.success && result.data && Array.isArray(result.data)) {
             selectSubset.innerHTML = '<option value="">请选择子集</option>';
-            
+
             result.data.forEach(subset => {
                 const option = document.createElement('option');
                 option.value = subset.subsetId;
@@ -327,21 +327,21 @@ function handleCensoringTypeChange() {
 function handleTestTypeChange(isEditMode = false) {
     const testType = document.getElementById('testType').value;
     const config = TEST_TYPE_CONFIG[testType];
-    
+
     if (!config) return;
-    
+
     // 更新标签名称和说明
     const testValueLabel = document.getElementById('testValueLabel');
     if (testValueLabel) {
         testValueLabel.innerHTML = `${config.labelName} <span class="required">*</span>`;
     }
-    
+
     // 更新提示说明
     const testValueHint = document.getElementById('testValueHint');
     if (testValueHint) {
         testValueHint.textContent = config.description;
     }
-    
+
     // 更新单位下拉菜单 - 高亮推荐单位
     const testUnitSelect = document.getElementById('testUnit');
     if (testUnitSelect) {
@@ -355,13 +355,13 @@ function handleTestTypeChange(isEditMode = false) {
                 option.style.color = '#6b7280';
             }
         });
-        
+
         // 如果不是编辑模式，设置默认单位
         if (!isEditMode) {
             testUnitSelect.value = config.defaultUnit;
         }
     }
-    
+
     // 如果不是编辑模式，设置默认值
     if (!isEditMode) {
         const testValueInput = document.getElementById('testValue');
@@ -369,7 +369,7 @@ function handleTestTypeChange(isEditMode = false) {
             testValueInput.value = config.defaultValue;
         }
     }
-    
+
     console.log(`📝 测试类型切换为: ${testType}, 标签: ${config.labelName}, 默认值: ${config.defaultValue} ${config.defaultUnit}`);
 }
 
@@ -386,7 +386,7 @@ async function saveTestData() {
         // 收集表单数据
         const idOperatorValue = document.getElementById('idOperator').value;
         const subsetIdValue = document.getElementById('subsetId').value;
-        
+
         const data = {
             moduleId: parseInt(document.getElementById('moduleId').value),
             testTime: document.getElementById('testTime').value,
@@ -407,7 +407,7 @@ async function saveTestData() {
         // 根据删失类型添加时间字段
         const censoringType = data.censoringType;
         data.failureTime = parseFloat(document.getElementById('failureTime').value);
-        
+
         if (censoringType === 2) {
             // 区间删失需要前次检测时间
             data.lastInspectionTime = parseFloat(document.getElementById('lastInspectionTime').value);
@@ -489,7 +489,7 @@ function resetForm() {
     document.getElementById('testId').value = '';
     document.getElementById('cancelBtn').style.display = 'none';
     document.getElementById('submitText').textContent = '💾 保存数据';
-    
+
     // 重新设置默认时间
     const testTimeInput = document.getElementById('testTime');
     if (testTimeInput) {
@@ -497,22 +497,22 @@ function resetForm() {
         now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
         testTimeInput.value = now.toISOString().slice(0, 16);
     }
-    
+
     // 设置默认值
     document.getElementById('temperature').value = 20;
     document.getElementById('humidity').value = 60;
     document.getElementById('testCycle').value = 1;
     document.getElementById('remarks').value = '请输入备注说明~~~!!!';
-    
+
     // 设置下拉菜单默认选中第一个有效选项（ID=1）
     const idOperatorSelect = document.getElementById('idOperator');
     const subsetIdSelect = document.getElementById('subsetId');
     if (idOperatorSelect) idOperatorSelect.value = '1';
     if (subsetIdSelect) subsetIdSelect.value = '1';
-    
+
     // 重置删失类型显示
     handleCensoringTypeChange();
-    
+
     // 重置测试类型并设置默认测试值和单位
     handleTestTypeChange(false);
 }
@@ -557,12 +557,12 @@ async function queryTestData() {
             allData = result.data || [];
             totalPages = Math.ceil(allData.length / PAGE_SIZE);
             currentPage = 1;  // 重置到第一页
-            
+
             // 渲染当前页数据
             renderCurrentPage();
             // 渲染分页控件
             renderPagination();
-            
+
             showMessage(`查询成功，共 ${allData.length} 条数据，${totalPages} 页`, 'success');
         } else {
             showMessage('查询失败: ' + result.message, 'error');
@@ -625,7 +625,7 @@ async function editTestData(testId) {
 
         if (result.success && result.data) {
             const data = result.data;
-            
+
             console.log('📝 编辑数据:', data);
             console.log('📝 idOperator:', data.idOperator, '子集ID:', data.subsetId);
             console.log('📝 测试值:', data.testValue, '单位:', data.testUnit);
@@ -635,14 +635,14 @@ async function editTestData(testId) {
             document.getElementById('moduleId').value = data.moduleId;
             document.getElementById('testTime').value = formatDateTimeForInput(data.testTime);
             document.getElementById('testType').value = data.testType;
-            
+
             // 先设置测试类型，再更新标签（编辑模式不覆盖值）
             handleTestTypeChange(true);
-            
+
             // 然后设置实际的测试值和单位（来自数据库）
             document.getElementById('testValue').value = data.testValue;
             document.getElementById('testUnit').value = data.testUnit || 'hours';
-            
+
             document.getElementById('testCycle').value = data.testCycle || 1;
             document.getElementById('quantity').value = data.quantity;
             document.getElementById('censoringType').value = data.censoringType;
@@ -652,16 +652,16 @@ async function editTestData(testId) {
             document.getElementById('temperature').value = data.temperature || 20;
             document.getElementById('humidity').value = data.humidity || 60;
             document.getElementById('remarks').value = data.remarks || '请输入备注说明~~~!!!';
-            
+
             // 设置下拉菜单值（转为字符串）
             const subsetIdSelect = document.getElementById('subsetId');
             const idOperatorSelect = document.getElementById('idOperator');
-            
+
             if (subsetIdSelect) {
                 subsetIdSelect.value = String(data.subsetId || 1);
                 console.log('📝 设置子集ID:', subsetIdSelect.value);
             }
-            
+
             if (idOperatorSelect) {
                 idOperatorSelect.value = String(data.idOperator || 1);
                 console.log('📝 设置操作员ID:', idOperatorSelect.value);
@@ -916,3 +916,307 @@ function scrollToTable() {
         dataSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 }
+
+// ==========================================
+// Weibull 分析页面功能
+// ==========================================
+
+// 模组数据缓存
+let moduleListData = [];
+let selectedModuleId = null;
+
+// 显示Weibull分析页面
+function showWeibullAnalysisPage() {
+    console.log('🔄 切换到 Weibull 分析页面...');
+
+    // 更新页面标题
+    document.title = 'Weibull 失效数据分析系统';
+    const headerTitle = document.querySelector('header h1');
+    if (headerTitle) {
+        headerTitle.textContent = '📈 Weibull 失效数据分析系统';
+    }
+
+    // 隐藏数据录入页面的main
+    const dataEntryMain = document.querySelector('main:not(#weibullAnalysisPage)');
+    if (dataEntryMain) {
+        dataEntryMain.style.display = 'none';
+    }
+
+    // 显示Weibull分析页面
+    const weibullPage = document.getElementById('weibullAnalysisPage');
+    if (weibullPage) {
+        weibullPage.style.display = 'block';
+    }
+
+    // 隐藏分析结果区域
+    const resultSection = document.getElementById('analysisResultSection');
+    if (resultSection) {
+        resultSection.style.display = 'none';
+    }
+
+    // 加载模组列表
+    loadModuleListForAnalysis();
+}
+
+// 返回数据录入页面
+function returnToDataEntry() {
+    console.log('🔄 返回数据录入页面...');
+
+    // 恢复页面标题
+    document.title = 'Weibull 失效数据录入系统';
+    const headerTitle = document.querySelector('header h1');
+    if (headerTitle) {
+        headerTitle.textContent = '📊 Weibull 失效数据录入系统';
+    }
+
+    // 显示数据录入页面的main
+    const dataEntryMain = document.querySelector('main:not(#weibullAnalysisPage)');
+    if (dataEntryMain) {
+        dataEntryMain.style.display = 'block';
+    }
+
+    // 隐藏Weibull分析页面
+    const weibullPage = document.getElementById('weibullAnalysisPage');
+    if (weibullPage) {
+        weibullPage.style.display = 'none';
+    }
+
+    // 重置选中状态
+    selectedModuleId = null;
+}
+
+// 加载模组列表用于分析
+async function loadModuleListForAnalysis() {
+    try {
+        console.log('🔄 正在加载模组列表用于分析...');
+
+        const response = await fetch(`${API_BASE_URL}/api/module`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+
+        const result = await response.json();
+
+        if (result.success && result.data && Array.isArray(result.data)) {
+            moduleListData = result.data;
+            renderModuleTable(result.data);
+            console.log(`✅ 加载了 ${result.data.length} 个模组`);
+        } else {
+            showMessage('加载模组列表失败', 'error');
+        }
+    } catch (error) {
+        console.error('❌ 加载模组列表失败:', error);
+        showMessage(`加载模组列表失败: ${error.message}`, 'error');
+    }
+}
+
+// 渲染模组表格
+function renderModuleTable(modules) {
+    const tbody = document.getElementById('moduleTableBody');
+    if (!tbody) return;
+
+    if (modules.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="4" class="no-data">暂无模组数据</td></tr>';
+        return;
+    }
+
+    tbody.innerHTML = modules.map(module => `
+        <tr onclick="selectModule(${module.moduleId})" class="${selectedModuleId === module.moduleId ? 'selected' : ''}">
+            <td>
+                <input type="radio" name="moduleSelect" value="${module.moduleId}" 
+                       ${selectedModuleId === module.moduleId ? 'checked' : ''}
+                       onclick="event.stopPropagation(); selectModule(${module.moduleId})">
+            </td>
+            <td>${module.moduleId}</td>
+            <td>${module.moduleCode}</td>
+            <td>${module.moduleName}</td>
+        </tr>
+    `).join('');
+}
+
+// 选择模组
+function selectModule(moduleId) {
+    selectedModuleId = moduleId;
+    console.log(`📌 选中模组 ID: ${moduleId}`);
+
+    // 更新表格行样式
+    const rows = document.querySelectorAll('#moduleTableBody tr');
+    rows.forEach(row => {
+        const radio = row.querySelector('input[type="radio"]');
+        if (radio && parseInt(radio.value) === moduleId) {
+            row.classList.add('selected');
+            radio.checked = true;
+        } else {
+            row.classList.remove('selected');
+        }
+    });
+}
+
+// 分析选定模组
+async function analyzeSelectedModule() {
+    if (!selectedModuleId) {
+        showMessage('请先选择一个模组', 'warning');
+        return;
+    }
+
+    const selectedModule = moduleListData.find(m => m.moduleId === selectedModuleId);
+    if (!selectedModule) {
+        showMessage('未找到选中的模组', 'error');
+        return;
+    }
+
+    console.log(`🔬 开始分析模组: ${selectedModule.moduleCode} (${selectedModule.moduleName})`);
+    showLoading(true);
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/weibullanalysis/module/${selectedModuleId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+
+        const result = await response.json();
+
+        if (result.success) {
+            displayAnalysisResult(result.data, false);
+            showMessage('模组分析完成', 'success');
+        } else {
+            showMessage(`分析失败: ${result.message}`, 'error');
+        }
+    } catch (error) {
+        console.error('❌ 模组分析失败:', error);
+        showMessage(`分析失败: ${error.message}`, 'error');
+    } finally {
+        showLoading(false);
+    }
+}
+
+// 分析所有模组
+async function analyzeAllModules() {
+    console.log('📊 开始分析所有模组...');
+    showLoading(true);
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/weibullanalysis/all`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+
+        const result = await response.json();
+
+        if (result.success) {
+            displayAnalysisResult(result.data, true);
+            showMessage('所有模组分析完成', 'success');
+        } else {
+            showMessage(`分析失败: ${result.message}`, 'error');
+        }
+    } catch (error) {
+        console.error('❌ 所有模组分析失败:', error);
+        showMessage(`分析失败: ${error.message}`, 'error');
+    } finally {
+        showLoading(false);
+    }
+}
+
+// 显示分析结果
+function displayAnalysisResult(data, isAllModules) {
+    const resultSection = document.getElementById('analysisResultSection');
+    const chartContainer = document.getElementById('weibullChartContainer');
+    const chartImage = document.getElementById('weibullChartImage');
+    const chartLoading = document.getElementById('chartLoading');
+    const reportContainer = document.getElementById('analysisReportContainer');
+    const downloadButtons = document.getElementById('downloadButtons');
+
+    // 显示结果区域
+    resultSection.style.display = 'block';
+
+    // 处理图形
+    if (data.chartPath) {
+        chartImage.src = `${API_BASE_URL}/${data.chartPath}?t=${Date.now()}`;
+        chartImage.style.display = 'block';
+        chartLoading.style.display = 'none';
+
+        // 设置下载链接
+        const downloadChartBtn = document.getElementById('downloadChartBtn');
+        downloadChartBtn.href = `${API_BASE_URL}/${data.chartPath}`;
+        downloadChartBtn.download = data.chartFileName || 'Weibull_Analysis_Chart.png';
+    } else {
+        chartImage.style.display = 'none';
+        chartLoading.textContent = '暂无图形数据';
+    }
+
+    // 处理报告数据
+    if (data.results && data.results.length > 0) {
+        reportContainer.style.display = 'block';
+        renderReportTable(data.results);
+
+        // 设置Excel下载链接
+        if (data.reportPath) {
+            const downloadReportBtn = document.getElementById('downloadReportBtn');
+            downloadReportBtn.href = `${API_BASE_URL}/${data.reportPath}`;
+            downloadReportBtn.download = data.reportFileName || 'Weibull_Analysis_Report.xlsx';
+            downloadButtons.style.display = 'flex';
+        }
+    } else {
+        reportContainer.style.display = 'none';
+    }
+
+    // 滚动到结果区域
+    resultSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// 渲染分析报告表格
+function renderReportTable(results) {
+    const tbody = document.getElementById('reportTableBody');
+    if (!tbody) return;
+
+    tbody.innerHTML = results.map(r => `
+        <tr>
+            <td>${r.moduleId || r.moduleID || '-'}</td>
+            <td>${r.moduleCode || '-'}</td>
+            <td>${r.moduleName || '-'}</td>
+            <td>${formatNumber(r.beta, 4)}</td>
+            <td>${formatNumber(r.lowerBeta, 4)}</td>
+            <td>${formatNumber(r.upperBeta, 4)}</td>
+            <td>${formatNumber(r.eta, 2)}</td>
+            <td>${formatNumber(r.lowerEta, 2)}</td>
+            <td>${formatNumber(r.upperEta, 2)}</td>
+            <td>${formatNumber(r.r2, 4)}</td>
+            <td>${formatNumber(r.mttf, 2)}</td>
+            <td>${formatNumber(r.b10, 2)}</td>
+            <td>${formatNumber(r.b50, 2)}</td>
+            <td>${formatNumber(r.b90, 2)}</td>
+            <td>${r.totalN || '-'}</td>
+            <td>${r.completeN || '-'}</td>
+            <td>${r.rightCensN || '-'}</td>
+            <td>${r.intervalCensN || '-'}</td>
+            <td>${r.leftCensN || '-'}</td>
+        </tr>
+    `).join('');
+}
+
+// 格式化数字
+function formatNumber(value, decimals) {
+    if (value === null || value === undefined || isNaN(value)) {
+        return '-';
+    }
+    return parseFloat(value).toFixed(decimals);
+}
+

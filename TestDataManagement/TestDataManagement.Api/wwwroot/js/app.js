@@ -4,33 +4,76 @@
 const API_BASE_URL = '';  // 使用相对路径，自动适应当前host
 
 // ==========================================
-// 测试类型配置 - 定义每种测试类型的默认值、单位和显示名称
+// 全局单位标签配置 - 每个单位对应的标签名称和描述
+// 无论测试类型是什么，选择的单位都会显示对应的标签
+// ==========================================
+const UNIT_LABEL_CONFIG = {
+    'hours': {
+        labelName: '额定寿命时间',
+        description: '产品在额定条件下的预期运行时间'
+    },
+    'cycles': {
+        labelName: '额定寿命周期',
+        description: '产品在额定条件下的预期运行周期数'
+    },
+    '℃': {
+        labelName: '温度值',
+        description: '测试温度设定值(摄氏度)'
+    },
+    'V': {
+        labelName: '电压值',
+        description: '施加的电压值(伏特)'
+    },
+    'A': {
+        labelName: '电流值',
+        description: '施加的电流值(安培)'
+    },
+    'W': {
+        labelName: '功率值',
+        description: '施加的功率值(瓦特)'
+    },
+    'MPa': {
+        labelName: '应力水平值',
+        description: '施加的机械应力强度(兆帕)'
+    },
+    'N': {
+        labelName: '力值',
+        description: '施加的机械力(牛顿)'
+    },
+    '%': {
+        labelName: '湿度值',
+        description: '测试环境的相对湿度参数'
+    },
+    'Hz': {
+        labelName: '振动频率',
+        description: '测试环境的振动频率参数'
+    },
+    'rpm': {
+        labelName: '转速',
+        description: '测试环境的转速参数'
+    }
+};
+
+// ==========================================
+// 测试类型配置 - 定义每种测试类型的默认值和推荐单位
 // ==========================================
 const TEST_TYPE_CONFIG = {
     'LIFE_TEST': {
-        labelName: '额定寿命时间',
-        description: '产品在额定条件下的预期运行时间',
         defaultValue: 1000,
         defaultUnit: 'hours',
-        units: ['hours', 'cycles']
+        units: ['hours', 'cycles']  // 推荐单位（会高亮显示）
     },
     'STRESS_TEST': {
-        labelName: '应力水平值',
-        description: '施加的机械应力或电气应力强度',
         defaultValue: 100,
         defaultUnit: 'MPa',
         units: ['MPa', 'N', 'V', 'A', 'W']
     },
     'BURN_IN': {
-        labelName: '老化温度/功率',
-        description: '加速老化测试时的温度或功率设定值',
         defaultValue: 85,
         defaultUnit: '℃',
         units: ['℃', 'W', 'V']
     },
     'ENVIRONMENTAL': {
-        labelName: '环境应力值',
-        description: '温度、湿度或振动等环境条件参数',
         defaultValue: 25,
         defaultUnit: '℃',
         units: ['℃', '%', 'Hz', 'rpm']
@@ -74,6 +117,15 @@ document.addEventListener('DOMContentLoaded', function() {
         testTypeSelect.addEventListener('change', handleTestTypeChange);
         // 触发一次以设置初始状态
         handleTestTypeChange();
+    }
+
+    // 绑定单位选择切换事件
+    const testUnitSelect = document.getElementById('testUnit');
+    if (testUnitSelect) {
+        testUnitSelect.addEventListener('change', handleUnitChange);
+        console.log('✅ 单位选择事件已绑定');
+    } else {
+        console.error('❌ 找不到testUnit元素');
     }
 
     // 绑定数据录入表单提交事件
@@ -330,18 +382,6 @@ function handleTestTypeChange(isEditMode = false) {
 
     if (!config) return;
 
-    // 更新标签名称和说明
-    const testValueLabel = document.getElementById('testValueLabel');
-    if (testValueLabel) {
-        testValueLabel.innerHTML = `${config.labelName} <span class="required">*</span>`;
-    }
-
-    // 更新提示说明
-    const testValueHint = document.getElementById('testValueHint');
-    if (testValueHint) {
-        testValueHint.textContent = config.description;
-    }
-
     // 更新单位下拉菜单 - 高亮推荐单位
     const testUnitSelect = document.getElementById('testUnit');
     if (testUnitSelect) {
@@ -370,7 +410,46 @@ function handleTestTypeChange(isEditMode = false) {
         }
     }
 
-    console.log(`📝 测试类型切换为: ${testType}, 标签: ${config.labelName}, 默认值: ${config.defaultValue} ${config.defaultUnit}`);
+    // 更新标签和描述（基于当前选中的单位）
+    updateLabelAndDescription();
+
+    console.log(`📝 测试类型切换为: ${testType}, 默认值: ${config.defaultValue} ${config.defaultUnit}`);
+}
+
+// ==========================================
+// 处理单位变化 - 动态更新标签名称和描述
+// ==========================================
+function handleUnitChange() {
+    console.log('🔔 handleUnitChange 被调用');
+    updateLabelAndDescription();
+}
+
+// ==========================================
+// 更新标签和描述 - 基于选中的单位（使用全局单位配置）
+// ==========================================
+function updateLabelAndDescription() {
+    const testUnit = document.getElementById('testUnit').value;
+    
+    // 从全局单位配置中获取标签和描述
+    const unitConfig = UNIT_LABEL_CONFIG[testUnit];
+    
+    // 如果找到单位配置则使用，否则使用默认配置
+    const labelName = unitConfig ? unitConfig.labelName : '测试值';
+    const description = unitConfig ? unitConfig.description : '请输入测试值';
+
+    // 更新标签名称
+    const testValueLabel = document.getElementById('testValueLabel');
+    if (testValueLabel) {
+        testValueLabel.innerHTML = `${labelName} <span class="required">*</span>`;
+    }
+
+    // 更新提示说明
+    const testValueHint = document.getElementById('testValueHint');
+    if (testValueHint) {
+        testValueHint.textContent = description;
+    }
+
+    console.log(`🔄 单位切换为: ${testUnit}, 标签: ${labelName}, 描述: ${description}`);
 }
 
 // ==========================================

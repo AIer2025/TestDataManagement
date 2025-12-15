@@ -3,6 +3,34 @@
   "WorkspaceRootPath": "C:\\Users\\86138\\Desktop\\\u6DF1\u5733\u6D4B\u8BD5\u670D\u52A1\u5668\\TestDataManagement\\TestDataManagement\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{10D299CB-B9FC-4E1C-9BCB-8B92322958B8}|TestDataManagement.Api\\TestDataManagement.Api.csproj|c:\\users\\86138\\desktop\\\u6DF1\u5733\u6D4B\u8BD5\u670D\u52A1\u5668\\testdatamanagement\\testdatamanagement\\testdatamanagement.api\\services\\moduleservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{10D299CB-B9FC-4E1C-9BCB-8B92322958B8}|TestDataManagement.Api\\TestDataManagement.Api.csproj|solutionrelative:testdatamanagement.api\\services\\moduleservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{10D299CB-B9FC-4E1C-9BCB-8B92322958B8}|TestDataManagement.Api\\TestDataManagement.Api.csproj|c:\\users\\86138\\desktop\\\u6DF1\u5733\u6D4B\u8BD5\u670D\u52A1\u5668\\testdatamanagement\\testdatamanagement\\testdatamanagement.api\\services\\iweibullanalysisservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{10D299CB-B9FC-4E1C-9BCB-8B92322958B8}|TestDataManagement.Api\\TestDataManagement.Api.csproj|solutionrelative:testdatamanagement.api\\services\\iweibullanalysisservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{10D299CB-B9FC-4E1C-9BCB-8B92322958B8}|TestDataManagement.Api\\TestDataManagement.Api.csproj|c:\\users\\86138\\desktop\\\u6DF1\u5733\u6D4B\u8BD5\u670D\u52A1\u5668\\testdatamanagement\\testdatamanagement\\testdatamanagement.api\\services\\imoduleservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{10D299CB-B9FC-4E1C-9BCB-8B92322958B8}|TestDataManagement.Api\\TestDataManagement.Api.csproj|solutionrelative:testdatamanagement.api\\services\\imoduleservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{10D299CB-B9FC-4E1C-9BCB-8B92322958B8}|TestDataManagement.Api\\TestDataManagement.Api.csproj|c:\\users\\86138\\desktop\\\u6DF1\u5733\u6D4B\u8BD5\u670D\u52A1\u5668\\testdatamanagement\\testdatamanagement\\testdatamanagement.api\\services\\weibullanalysisservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{10D299CB-B9FC-4E1C-9BCB-8B92322958B8}|TestDataManagement.Api\\TestDataManagement.Api.csproj|solutionrelative:testdatamanagement.api\\services\\weibullanalysisservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{10D299CB-B9FC-4E1C-9BCB-8B92322958B8}|TestDataManagement.Api\\TestDataManagement.Api.csproj|c:\\users\\86138\\desktop\\\u6DF1\u5733\u6D4B\u8BD5\u670D\u52A1\u5668\\testdatamanagement\\testdatamanagement\\testdatamanagement.api\\models\\apiresponse.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{10D299CB-B9FC-4E1C-9BCB-8B92322958B8}|TestDataManagement.Api\\TestDataManagement.Api.csproj|solutionrelative:testdatamanagement.api\\models\\apiresponse.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{10D299CB-B9FC-4E1C-9BCB-8B92322958B8}|TestDataManagement.Api\\TestDataManagement.Api.csproj|c:\\users\\86138\\desktop\\\u6DF1\u5733\u6D4B\u8BD5\u670D\u52A1\u5668\\testdatamanagement\\testdatamanagement\\testdatamanagement.api\\repositories\\modulerepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{10D299CB-B9FC-4E1C-9BCB-8B92322958B8}|TestDataManagement.Api\\TestDataManagement.Api.csproj|solutionrelative:testdatamanagement.api\\repositories\\modulerepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{10D299CB-B9FC-4E1C-9BCB-8B92322958B8}|TestDataManagement.Api\\TestDataManagement.Api.csproj|c:\\users\\86138\\desktop\\\u6DF1\u5733\u6D4B\u8BD5\u670D\u52A1\u5668\\testdatamanagement\\testdatamanagement\\testdatamanagement.api\\repositories\\imodulerepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{10D299CB-B9FC-4E1C-9BCB-8B92322958B8}|TestDataManagement.Api\\TestDataManagement.Api.csproj|solutionrelative:testdatamanagement.api\\repositories\\imodulerepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{10D299CB-B9FC-4E1C-9BCB-8B92322958B8}|TestDataManagement.Api\\TestDataManagement.Api.csproj|c:\\users\\86138\\desktop\\\u6DF1\u5733\u6D4B\u8BD5\u670D\u52A1\u5668\\testdatamanagement\\testdatamanagement\\testdatamanagement.api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{10D299CB-B9FC-4E1C-9BCB-8B92322958B8}|TestDataManagement.Api\\TestDataManagement.Api.csproj|solutionrelative:testdatamanagement.api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
@@ -14,21 +42,112 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 1,
+          "SelectedChildIndex": 0,
           "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "ModuleService.cs",
+              "DocumentMoniker": "C:\\Users\\86138\\Desktop\\\u6DF1\u5733\u6D4B\u8BD5\u670D\u52A1\u5668\\TestDataManagement\\TestDataManagement\\TestDataManagement.Api\\Services\\ModuleService.cs",
+              "RelativeDocumentMoniker": "TestDataManagement.Api\\Services\\ModuleService.cs",
+              "ToolTip": "C:\\Users\\86138\\Desktop\\\u6DF1\u5733\u6D4B\u8BD5\u670D\u52A1\u5668\\TestDataManagement\\TestDataManagement\\TestDataManagement.Api\\Services\\ModuleService.cs",
+              "RelativeToolTip": "TestDataManagement.Api\\Services\\ModuleService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-15T04:47:02.307Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "IWeibullAnalysisService.cs",
+              "DocumentMoniker": "C:\\Users\\86138\\Desktop\\\u6DF1\u5733\u6D4B\u8BD5\u670D\u52A1\u5668\\TestDataManagement\\TestDataManagement\\TestDataManagement.Api\\Services\\IWeibullAnalysisService.cs",
+              "RelativeDocumentMoniker": "TestDataManagement.Api\\Services\\IWeibullAnalysisService.cs",
+              "ToolTip": "C:\\Users\\86138\\Desktop\\\u6DF1\u5733\u6D4B\u8BD5\u670D\u52A1\u5668\\TestDataManagement\\TestDataManagement\\TestDataManagement.Api\\Services\\IWeibullAnalysisService.cs",
+              "RelativeToolTip": "TestDataManagement.Api\\Services\\IWeibullAnalysisService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-15T04:46:53.92Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "IModuleService.cs",
+              "DocumentMoniker": "C:\\Users\\86138\\Desktop\\\u6DF1\u5733\u6D4B\u8BD5\u670D\u52A1\u5668\\TestDataManagement\\TestDataManagement\\TestDataManagement.Api\\Services\\IModuleService.cs",
+              "RelativeDocumentMoniker": "TestDataManagement.Api\\Services\\IModuleService.cs",
+              "ToolTip": "C:\\Users\\86138\\Desktop\\\u6DF1\u5733\u6D4B\u8BD5\u670D\u52A1\u5668\\TestDataManagement\\TestDataManagement\\TestDataManagement.Api\\Services\\IModuleService.cs",
+              "RelativeToolTip": "TestDataManagement.Api\\Services\\IModuleService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-15T04:46:48.946Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "WeibullAnalysisService.cs",
+              "DocumentMoniker": "C:\\Users\\86138\\Desktop\\\u6DF1\u5733\u6D4B\u8BD5\u670D\u52A1\u5668\\TestDataManagement\\TestDataManagement\\TestDataManagement.Api\\Services\\WeibullAnalysisService.cs",
+              "RelativeDocumentMoniker": "TestDataManagement.Api\\Services\\WeibullAnalysisService.cs",
+              "ToolTip": "C:\\Users\\86138\\Desktop\\\u6DF1\u5733\u6D4B\u8BD5\u670D\u52A1\u5668\\TestDataManagement\\TestDataManagement\\TestDataManagement.Api\\Services\\WeibullAnalysisService.cs",
+              "RelativeToolTip": "TestDataManagement.Api\\Services\\WeibullAnalysisService.cs",
+              "ViewState": "AgIAAKkEAAAAAAAAAAAUwBMAAAAiAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-15T04:42:57.161Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "ApiResponse.cs",
+              "DocumentMoniker": "C:\\Users\\86138\\Desktop\\\u6DF1\u5733\u6D4B\u8BD5\u670D\u52A1\u5668\\TestDataManagement\\TestDataManagement\\TestDataManagement.Api\\Models\\ApiResponse.cs",
+              "RelativeDocumentMoniker": "TestDataManagement.Api\\Models\\ApiResponse.cs",
+              "ToolTip": "C:\\Users\\86138\\Desktop\\\u6DF1\u5733\u6D4B\u8BD5\u670D\u52A1\u5668\\TestDataManagement\\TestDataManagement\\TestDataManagement.Api\\Models\\ApiResponse.cs",
+              "RelativeToolTip": "TestDataManagement.Api\\Models\\ApiResponse.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAAbAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-15T04:42:26.839Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "ModuleRepository.cs",
+              "DocumentMoniker": "C:\\Users\\86138\\Desktop\\\u6DF1\u5733\u6D4B\u8BD5\u670D\u52A1\u5668\\TestDataManagement\\TestDataManagement\\TestDataManagement.Api\\Repositories\\ModuleRepository.cs",
+              "RelativeDocumentMoniker": "TestDataManagement.Api\\Repositories\\ModuleRepository.cs",
+              "ToolTip": "C:\\Users\\86138\\Desktop\\\u6DF1\u5733\u6D4B\u8BD5\u670D\u52A1\u5668\\TestDataManagement\\TestDataManagement\\TestDataManagement.Api\\Repositories\\ModuleRepository.cs",
+              "RelativeToolTip": "TestDataManagement.Api\\Repositories\\ModuleRepository.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-15T04:41:55.818Z",
+              "EditorCaption": ""
+            },
             {
               "$type": "Bookmark",
               "Name": "ST:0:0:{1c4feeaa-4718-4aa9-859d-94ce25d182ba}"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 6,
+              "Title": "IModuleRepository.cs",
+              "DocumentMoniker": "C:\\Users\\86138\\Desktop\\\u6DF1\u5733\u6D4B\u8BD5\u670D\u52A1\u5668\\TestDataManagement\\TestDataManagement\\TestDataManagement.Api\\Repositories\\IModuleRepository.cs",
+              "RelativeDocumentMoniker": "TestDataManagement.Api\\Repositories\\IModuleRepository.cs",
+              "ToolTip": "C:\\Users\\86138\\Desktop\\\u6DF1\u5733\u6D4B\u8BD5\u670D\u52A1\u5668\\TestDataManagement\\TestDataManagement\\TestDataManagement.Api\\Repositories\\IModuleRepository.cs",
+              "RelativeToolTip": "TestDataManagement.Api\\Repositories\\IModuleRepository.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-15T04:41:50.794Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
               "Title": "Program.cs",
               "DocumentMoniker": "C:\\Users\\86138\\Desktop\\\u6DF1\u5733\u6D4B\u8BD5\u670D\u52A1\u5668\\TestDataManagement\\TestDataManagement\\TestDataManagement.Api\\Program.cs",
               "RelativeDocumentMoniker": "TestDataManagement.Api\\Program.cs",
-              "ToolTip": "C:\\Users\\86138\\Desktop\\\u6DF1\u5733\u6D4B\u8BD5\u670D\u52A1\u5668\\TestDataManagement\\TestDataManagement\\TestDataManagement.Api\\Program.cs*",
-              "RelativeToolTip": "TestDataManagement.Api\\Program.cs*",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABgAAAAAAAAAAAAAAA==",
+              "ToolTip": "C:\\Users\\86138\\Desktop\\\u6DF1\u5733\u6D4B\u8BD5\u670D\u52A1\u5668\\TestDataManagement\\TestDataManagement\\TestDataManagement.Api\\Program.cs",
+              "RelativeToolTip": "TestDataManagement.Api\\Program.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABMAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-12-12T01:53:38.94Z",
               "EditorCaption": ""

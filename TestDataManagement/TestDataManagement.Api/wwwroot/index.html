@@ -242,6 +242,338 @@
                 <button type="button" class="btn btn-weibull" id="weibullAnalysisBtn" onclick="showWeibullAnalysisPage()">
                     📈 Weibull 分析
                 </button>
+                <button type="button" class="btn btn-master-data" id="masterDataBtn" onclick="showMasterDataPage()">
+                    ⚙️ 主数据维护
+                </button>
+            </div>
+        </section>
+    </main>
+
+    <!-- ================= 主数据维护页面 ================= -->
+    <main id="masterDataPage" style="display:none;">
+        <section class="card" id="masterDataSection">
+            <h2>⚙️ 主数据维护</h2>
+            
+            <!-- 主数据类型选择标签页 -->
+            <div class="master-data-tabs">
+                <button type="button" class="tab-btn active" onclick="switchMasterDataTab('operator')">实验员主数据</button>
+                <button type="button" class="tab-btn" onclick="switchMasterDataTab('system')">公司(系统)主数据</button>
+                <button type="button" class="tab-btn" onclick="switchMasterDataTab('platform')">平台主数据</button>
+                <button type="button" class="tab-btn" onclick="switchMasterDataTab('module')">模块主数据</button>
+            </div>
+
+            <!-- ============= 实验员主数据 ============= -->
+            <div id="operatorTab" class="master-data-content active">
+                <div class="master-data-form-section">
+                    <h3 id="operatorFormTitle">新增实验员</h3>
+                    <form id="operatorForm">
+                        <input type="hidden" id="operatorId">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="operatorName">姓名 <span class="required">*</span></label>
+                                <input type="text" id="operatorName" required maxlength="20">
+                            </div>
+                            <div class="form-group">
+                                <label for="operatorMobile">手机号码 <span class="required">*</span></label>
+                                <input type="text" id="operatorMobile" required pattern="^[0-9]{11}$" maxlength="11" placeholder="11位手机号码">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="operatorMail">邮箱地址 <span class="required">*</span></label>
+                                <input type="email" id="operatorMail" required maxlength="40">
+                            </div>
+                            <div class="form-group">
+                                <label for="operatorDeptId">部门ID <span class="required">*</span></label>
+                                <input type="number" id="operatorDeptId" required min="1" max="100" placeholder="1-100">
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">💾 保存</button>
+                            <button type="button" class="btn btn-secondary" onclick="resetOperatorForm()">🔄 重置</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="master-data-table-section">
+                    <table id="operatorTable" class="master-data-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>姓名</th>
+                                <th>手机号码</th>
+                                <th>邮箱地址</th>
+                                <th>部门ID</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="operatorTableBody">
+                            <tr><td colspan="6" class="no-data">加载中...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ============= 公司(系统)主数据 ============= -->
+            <div id="systemTab" class="master-data-content">
+                <div class="master-data-form-section">
+                    <h3 id="systemFormTitle">新增公司(系统)</h3>
+                    <form id="systemForm">
+                        <input type="hidden" id="systemId">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="systemCode">系统编码 <span class="required">*</span></label>
+                                <input type="text" id="systemCode" required maxlength="50">
+                            </div>
+                            <div class="form-group">
+                                <label for="systemName">系统名称 <span class="required">*</span></label>
+                                <input type="text" id="systemName" required maxlength="200">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="systemLocation">安装位置 <span class="required">*</span></label>
+                                <input type="text" id="systemLocation" required maxlength="200">
+                            </div>
+                            <div class="form-group">
+                                <label for="systemIsActive">状态</label>
+                                <select id="systemIsActive">
+                                    <option value="true">启用</option>
+                                    <option value="false">禁用</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="systemInstallDate">安装日期</label>
+                                <input type="date" id="systemInstallDate">
+                            </div>
+                            <div class="form-group">
+                                <label for="systemWarrantyDate">质保截止日期</label>
+                                <input type="date" id="systemWarrantyDate">
+                            </div>
+                        </div>
+                        <div class="form-group full-width">
+                            <label for="systemDescription">系统描述 <span class="required">*</span></label>
+                            <textarea id="systemDescription" rows="2" required></textarea>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">💾 保存</button>
+                            <button type="button" class="btn btn-secondary" onclick="resetSystemForm()">🔄 重置</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="master-data-table-section">
+                    <table id="systemTable" class="master-data-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>编码</th>
+                                <th>名称</th>
+                                <th>描述</th>
+                                <th>位置</th>
+                                <th>状态</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="systemTableBody">
+                            <tr><td colspan="7" class="no-data">加载中...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ============= 平台主数据 ============= -->
+            <div id="platformTab" class="master-data-content">
+                <div class="master-data-form-section">
+                    <h3 id="platformFormTitle">新增平台</h3>
+                    <form id="platformForm">
+                        <input type="hidden" id="platformId">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="platformSystemId">所属系统 <span class="required">*</span></label>
+                                <select id="platformSystemId" required>
+                                    <option value="">请选择系统</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="platformCode">平台编码 <span class="required">*</span></label>
+                                <input type="text" id="platformCode" required maxlength="50">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="platformName">平台名称 <span class="required">*</span></label>
+                                <input type="text" id="platformName" required maxlength="200">
+                            </div>
+                            <div class="form-group">
+                                <label for="platformType">平台类型</label>
+                                <select id="platformType">
+                                    <option value="">请选择</option>
+                                    <option value="TESTING">测试平台</option>
+                                    <option value="PRODUCTION">生产平台</option>
+                                    <option value="DEVELOPMENT">研发平台</option>
+                                    <option value="QUALITY">质检平台</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="platformSerial">序列号</label>
+                                <input type="text" id="platformSerial" maxlength="100">
+                            </div>
+                            <div class="form-group">
+                                <label for="platformInstallDate">安装日期</label>
+                                <input type="date" id="platformInstallDate">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="platformIsActive">状态</label>
+                                <select id="platformIsActive">
+                                    <option value="true">启用</option>
+                                    <option value="false">禁用</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group full-width">
+                            <label for="platformDescription">平台描述 <span class="required">*</span></label>
+                            <textarea id="platformDescription" rows="2" required></textarea>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">💾 保存</button>
+                            <button type="button" class="btn btn-secondary" onclick="resetPlatformForm()">🔄 重置</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="master-data-table-section">
+                    <table id="platformTable" class="master-data-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>所属系统</th>
+                                <th>编码</th>
+                                <th>名称</th>
+                                <th>类型</th>
+                                <th>描述</th>
+                                <th>状态</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="platformTableBody">
+                            <tr><td colspan="8" class="no-data">加载中...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ============= 模块主数据 ============= -->
+            <div id="moduleTab" class="master-data-content">
+                <div class="master-data-form-section">
+                    <h3 id="moduleFormTitle">新增模块</h3>
+                    <form id="moduleMasterForm">
+                        <input type="hidden" id="moduleMasterId">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="modulePlatformId">所属平台 <span class="required">*</span></label>
+                                <select id="modulePlatformId" required onchange="handleModulePlatformChange()">
+                                    <option value="">请选择平台</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="moduleMasterCode">模块编码 <span class="required">*</span></label>
+                                <input type="text" id="moduleMasterCode" required maxlength="50" placeholder="选择平台后自动填充前缀">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="moduleMasterName">模块名称 <span class="required">*</span></label>
+                                <input type="text" id="moduleMasterName" required maxlength="200">
+                            </div>
+                            <div class="form-group">
+                                <label for="moduleMasterType">模块类型</label>
+                                <select id="moduleMasterType">
+                                    <option value="">请选择</option>
+                                    <option value="POWER">电源模组</option>
+                                    <option value="SENSOR">传感器模组</option>
+                                    <option value="CONTROLLER">控制器模组</option>
+                                    <option value="MOTOR">电机模组</option>
+                                    <option value="DISPLAY">显示模组</option>
+                                    <option value="COMMUNICATION">通信模组</option>
+                                    <option value="STORAGE">存储模组</option>
+                                    <option value="SmartLabOS">SmartLabOS</option>
+                                    <option value="OTHER">其他模组</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="moduleManufacturer">制造商</label>
+                                <input type="text" id="moduleManufacturer" maxlength="200">
+                            </div>
+                            <div class="form-group">
+                                <label for="moduleModelNumber">型号</label>
+                                <input type="text" id="moduleModelNumber" maxlength="100">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="moduleSerialNumber">序列号</label>
+                                <input type="text" id="moduleSerialNumber" maxlength="100">
+                            </div>
+                            <div class="form-group">
+                                <label for="moduleManufactureDate">生产日期</label>
+                                <input type="date" id="moduleManufactureDate">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="moduleRatedLife">额定寿命(小时)</label>
+                                <input type="number" id="moduleRatedLife" min="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="moduleMasterIsActive">状态</label>
+                                <select id="moduleMasterIsActive">
+                                    <option value="true">启用</option>
+                                    <option value="false">禁用</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group full-width">
+                            <label for="moduleMasterDescription">模块描述</label>
+                            <textarea id="moduleMasterDescription" rows="2"></textarea>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">💾 保存</button>
+                            <button type="button" class="btn btn-secondary" onclick="resetModuleMasterForm()">🔄 重置</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="master-data-table-section">
+                    <table id="moduleMasterTable" class="master-data-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>所属平台</th>
+                                <th>编码</th>
+                                <th>名称</th>
+                                <th>类型</th>
+                                <th>制造商</th>
+                                <th>状态</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="moduleMasterTableBody">
+                            <tr><td colspan="8" class="no-data">加载中...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 返回按钮 -->
+            <div class="master-data-actions">
+                <button type="button" class="btn btn-secondary" onclick="returnToDataEntryFromMasterData()">
+                    ↩️ 返回数据录入
+                </button>
             </div>
         </section>
     </main>
@@ -354,5 +686,6 @@
 <div id="message" class="message" style="display:none;"></div>
 
 <script src="js/app.js"></script>
+<script src="js/masterData.js"></script>
 </body>
 </html>

@@ -15,7 +15,14 @@ public class Module
     public string? Description { get; set; }
     public bool IsActive { get; set; } = true;
     
+    // 创建和更新信息
+    public string? CreatedBy { get; set; }
+    public string? UpdatedBy { get; set; }
+    
     // 导航属性
     public string? PlatformName { get; set; }
     public string? SystemName { get; set; }
+    
+    // 是否被测试数据引用（用于判断是否可删除）
+    public bool IsReferenced { get; set; }
 }

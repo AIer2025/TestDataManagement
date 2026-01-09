@@ -737,3 +737,191 @@ footer {
     font-weight: 600;
     color: #333;
 }
+
+/* ==========================================
+   主数据维护页面样式
+   ========================================== */
+
+/* 主数据维护按钮 */
+.btn-master-data {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    color: white;
+    padding: 16px 50px;
+    font-size: 1.2em;
+    font-weight: 700;
+    border-radius: 50px;
+    box-shadow: 0 4px 15px rgba(240, 147, 251, 0.4);
+    transition: all 0.3s ease;
+    margin-left: 20px;
+}
+
+.btn-master-data:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 25px rgba(240, 147, 251, 0.5);
+}
+
+/* 主数据标签页 */
+.master-data-tabs {
+    display: flex;
+    gap: 5px;
+    margin-bottom: 25px;
+    border-bottom: 2px solid #e0e0e0;
+    padding-bottom: 0;
+    flex-wrap: wrap;
+}
+
+.tab-btn {
+    padding: 12px 24px;
+    background: #f8f9fa;
+    border: 2px solid #e0e0e0;
+    border-bottom: none;
+    border-radius: 8px 8px 0 0;
+    cursor: pointer;
+    font-weight: 600;
+    color: #666;
+    transition: all 0.3s;
+    margin-bottom: -2px;
+}
+
+.tab-btn:hover {
+    background: #e8f4fd;
+    color: #667eea;
+}
+
+.tab-btn.active {
+    background: white;
+    color: #667eea;
+    border-color: #667eea;
+    border-bottom: 2px solid white;
+}
+
+/* 主数据内容区 */
+.master-data-content {
+    display: none;
+}
+
+.master-data-content.active {
+    display: block;
+}
+
+/* 主数据表单区域 */
+.master-data-form-section {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 25px;
+    border: 1px solid #e0e0e0;
+}
+
+.master-data-form-section h3 {
+    color: #667eea;
+    margin-bottom: 20px;
+    font-size: 1.2em;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+/* 主数据表格区域 */
+.master-data-table-section {
+    overflow-x: auto;
+}
+
+.master-data-table {
+    width: 100%;
+    font-size: 0.9em;
+}
+
+.master-data-table th {
+    padding: 12px 10px;
+    white-space: nowrap;
+}
+
+.master-data-table td {
+    padding: 10px;
+    vertical-align: middle;
+}
+
+.master-data-table .action-buttons {
+    display: flex;
+    gap: 5px;
+    flex-wrap: nowrap;
+}
+
+.master-data-table .btn-edit,
+.master-data-table .btn-danger {
+    padding: 5px 10px;
+    font-size: 0.85em;
+    white-space: nowrap;
+}
+
+/* 主数据页面底部操作区 */
+.master-data-actions {
+    display: flex;
+    justify-content: center;
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #e0e0e0;
+}
+
+/* 状态标签 */
+.status-active {
+    background: #27ae60;
+    color: white;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 0.85em;
+    font-weight: 600;
+}
+
+.status-inactive {
+    background: #95a5a6;
+    color: white;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 0.85em;
+    font-weight: 600;
+}
+
+/* 被引用标记 */
+.ref-badge {
+    background: #e74c3c;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 0.75em;
+    margin-left: 5px;
+}
+
+/* 禁用按钮 */
+.btn-disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+/* 响应式主数据页面 */
+@media (max-width: 768px) {
+    .master-data-tabs {
+        flex-direction: column;
+    }
+    
+    .tab-btn {
+        border-radius: 8px;
+        border: 2px solid #e0e0e0;
+        margin-bottom: 5px;
+    }
+    
+    .tab-btn.active {
+        border-bottom: 2px solid #667eea;
+    }
+    
+    .btn-master-data {
+        margin-left: 0;
+        margin-top: 15px;
+    }
+    
+    .weibull-entry-container {
+        flex-direction: column;
+        align-items: center;
+    }
+}

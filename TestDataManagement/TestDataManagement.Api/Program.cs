@@ -21,6 +21,10 @@ builder.Services.AddScoped<IModuleService, ModuleService>();
 // 注册 Weibull 分析服务
 builder.Services.AddScoped<IWeibullAnalysisService, WeibullAnalysisService>();
 
+// 注册主数据维护服务
+builder.Services.AddScoped<IMasterDataRepository>(sp => new MasterDataRepository(connectionString));
+builder.Services.AddScoped<IMasterDataService, MasterDataService>();
+
 // 配置CORS
 builder.Services.AddCors(options =>
 {

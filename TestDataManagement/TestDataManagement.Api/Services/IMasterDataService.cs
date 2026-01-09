@@ -23,6 +23,7 @@ public interface IMasterDataService
     
     // ==================== 平台主数据 ====================
     Task<List<Platform>> GetAllPlatformsAsync();
+    Task<List<Platform>> GetPlatformsBySystemIdAsync(int systemId);
     Task<Platform?> GetPlatformByIdAsync(int id);
     Task<int> CreatePlatformAsync(Platform entity);
     Task<bool> UpdatePlatformAsync(Platform entity);
@@ -30,6 +31,7 @@ public interface IMasterDataService
     
     // ==================== 模块主数据 ====================
     Task<List<Module>> GetAllModulesForMasterDataAsync();
+    Task<List<Module>> GetModulesByPlatformIdAsync(int platformId);
     Task<Module?> GetModuleForMasterDataByIdAsync(int id);
     Task<int> CreateModuleAsync(Module entity);
     Task<bool> UpdateModuleAsync(Module entity);

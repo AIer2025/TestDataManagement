@@ -332,6 +332,31 @@ public class MasterDataRepository : IMasterDataRepository
         return null;
     }
 
+    public async Task<List<Platform>> GetPlatformsBySystemIdAsync(int systemId)
+    {
+        const string sql = @"
+            SELECT p.*, s.system_name,
+                   CASE WHEN EXISTS(SELECT 1 FROM tb_module m WHERE m.platform_id = p.platform_id) THEN 1 ELSE 0 END AS is_referenced
+            FROM tb_platform p
+            INNER JOIN tb_system s ON p.system_id = s.system_id
+            WHERE p.system_id = @SystemId
+            ORDER BY p.platform_id";
+
+        await using var connection = new MySqlConnection(_connectionString);
+        await connection.OpenAsync();
+        
+        await using var command = new MySqlCommand(sql, connection);
+        command.Parameters.AddWithValue("@SystemId", systemId);
+        await using var reader = await command.ExecuteReaderAsync();
+        
+        var list = new List<Platform>();
+        while (await reader.ReadAsync())
+        {
+            list.Add(MapToPlatform(reader));
+        }
+        return list;
+    }
+
     public async Task<int> CreatePlatformAsync(Platform entity)
     {
         const string sql = @"
@@ -460,6 +485,32 @@ public class MasterDataRepository : IMasterDataRepository
         await connection.OpenAsync();
         
         await using var command = new MySqlCommand(sql, connection);
+        await using var reader = await command.ExecuteReaderAsync();
+        
+        var list = new List<Module>();
+        while (await reader.ReadAsync())
+        {
+            list.Add(MapToModuleWithRef(reader));
+        }
+        return list;
+    }
+
+    public async Task<List<Module>> GetModulesByPlatformIdAsync(int platformId)
+    {
+        const string sql = @"
+            SELECT m.*, p.platform_name, s.system_name,
+                   CASE WHEN EXISTS(SELECT 1 FROM tb_test_data td WHERE td.module_id = m.module_id) THEN 1 ELSE 0 END AS is_referenced
+            FROM tb_module m
+            INNER JOIN tb_platform p ON m.platform_id = p.platform_id
+            INNER JOIN tb_system s ON p.system_id = s.system_id
+            WHERE m.platform_id = @PlatformId
+            ORDER BY m.module_id";
+
+        await using var connection = new MySqlConnection(_connectionString);
+        await connection.OpenAsync();
+        
+        await using var command = new MySqlCommand(sql, connection);
+        command.Parameters.AddWithValue("@PlatformId", platformId);
         await using var reader = await command.ExecuteReaderAsync();
         
         var list = new List<Module>();

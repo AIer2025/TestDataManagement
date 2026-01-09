@@ -456,6 +456,39 @@ async function loadSystemsForDropdown() {
     }
 }
 
+// 处理平台页面的系统选择变化 - 根据选中的系统过滤平台表格数据
+async function handlePlatformSystemChange() {
+    const systemId = document.getElementById('platformSystemId').value;
+    console.log(`📋 系统选择变化，systemId: ${systemId}`);
+    
+    if (systemId) {
+        // 根据选中的系统ID加载该系统下的平台
+        await loadPlatformDataBySystemId(parseInt(systemId));
+    } else {
+        // 如果没有选择系统，显示所有平台
+        await loadPlatformData();
+    }
+}
+
+// 根据系统ID加载平台数据
+async function loadPlatformDataBySystemId(systemId) {
+    try {
+        console.log(`🔄 加载系统 ${systemId} 下的平台数据...`);
+        const response = await fetch(`${API_BASE_URL}/api/masterdata/platforms/by-system/${systemId}`);
+        const result = await response.json();
+
+        if (result.success && result.data) {
+            // 更新平台缓存（仅为当前系统的平台）
+            renderPlatformTable(result.data);
+        } else {
+            showMessage('加载平台数据失败', 'error');
+        }
+    } catch (error) {
+        console.error('❌ 加载平台数据失败:', error);
+        showMessage(`加载失败: ${error.message}`, 'error');
+    }
+}
+
 async function loadPlatformData() {
     try {
         console.log('🔄 加载平台数据...');
@@ -645,8 +678,8 @@ async function loadPlatformsForDropdown() {
     }
 }
 
-// 处理平台选择变化
-function handleModulePlatformChange() {
+// 处理平台选择变化 - 更新模块编码前缀并根据平台过滤模块表格数据
+async function handleModulePlatformChange() {
     const platformId = document.getElementById('modulePlatformId').value;
     const moduleCodeInput = document.getElementById('moduleMasterCode');
     
@@ -664,10 +697,34 @@ function handleModulePlatformChange() {
             // 保存当前选中的platform_code用于验证
             moduleCodeInput.dataset.platformCode = platformCode;
         }
+        
+        // 根据选中的平台ID加载该平台下的模块
+        await loadModuleDataByPlatformId(parseInt(platformId));
     } else {
         moduleCodeInput.value = '';
         moduleCodeInput.placeholder = '选择平台后自动填充前缀';
         moduleCodeInput.dataset.platformCode = '';
+        
+        // 如果没有选择平台，显示所有模块
+        await loadModuleMasterData();
+    }
+}
+
+// 根据平台ID加载模块数据
+async function loadModuleDataByPlatformId(platformId) {
+    try {
+        console.log(`🔄 加载平台 ${platformId} 下的模块数据...`);
+        const response = await fetch(`${API_BASE_URL}/api/masterdata/modules/by-platform/${platformId}`);
+        const result = await response.json();
+
+        if (result.success && result.data) {
+            renderModuleMasterTable(result.data);
+        } else {
+            showMessage('加载模块数据失败', 'error');
+        }
+    } catch (error) {
+        console.error('❌ 加载模块数据失败:', error);
+        showMessage(`加载失败: ${error.message}`, 'error');
     }
 }
 

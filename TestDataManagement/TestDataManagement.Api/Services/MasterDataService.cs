@@ -107,6 +107,11 @@ public class MasterDataService : IMasterDataService
         return await _repository.GetAllPlatformsAsync();
     }
 
+    public async Task<List<Platform>> GetPlatformsBySystemIdAsync(int systemId)
+    {
+        return await _repository.GetPlatformsBySystemIdAsync(systemId);
+    }
+
     public async Task<Platform?> GetPlatformByIdAsync(int id)
     {
         return await _repository.GetPlatformByIdAsync(id);
@@ -150,6 +155,11 @@ public class MasterDataService : IMasterDataService
     public async Task<List<Module>> GetAllModulesForMasterDataAsync()
     {
         return await _repository.GetAllModulesAsync();
+    }
+
+    public async Task<List<Module>> GetModulesByPlatformIdAsync(int platformId)
+    {
+        return await _repository.GetModulesByPlatformIdAsync(platformId);
     }
 
     public async Task<Module?> GetModuleForMasterDataByIdAsync(int id)

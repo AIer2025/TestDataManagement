@@ -326,6 +326,24 @@ public class MasterDataController : ControllerBase
     }
 
     /// <summary>
+    /// 根据系统ID获取平台列表
+    /// </summary>
+    [HttpGet("platforms/by-system/{systemId}")]
+    public async Task<ActionResult<ApiResponse<List<Platform>>>> GetPlatformsBySystemId(int systemId)
+    {
+        try
+        {
+            var data = await _service.GetPlatformsBySystemIdAsync(systemId);
+            return Ok(ApiResponse<List<Platform>>.SuccessResult(data));
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "根据系统ID获取平台列表失败");
+            return StatusCode(500, ApiResponse<List<Platform>>.ErrorResult("服务器内部错误"));
+        }
+    }
+
+    /// <summary>
     /// 获取指定平台
     /// </summary>
     [HttpGet("platforms/{id}")]
@@ -465,6 +483,24 @@ public class MasterDataController : ControllerBase
         catch (Exception ex)
         {
             _logger.LogError(ex, "获取模块列表失败");
+            return StatusCode(500, ApiResponse<List<Module>>.ErrorResult("服务器内部错误"));
+        }
+    }
+
+    /// <summary>
+    /// 根据平台ID获取模块列表
+    /// </summary>
+    [HttpGet("modules/by-platform/{platformId}")]
+    public async Task<ActionResult<ApiResponse<List<Module>>>> GetModulesByPlatformId(int platformId)
+    {
+        try
+        {
+            var data = await _service.GetModulesByPlatformIdAsync(platformId);
+            return Ok(ApiResponse<List<Module>>.SuccessResult(data));
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "根据平台ID获取模块列表失败");
             return StatusCode(500, ApiResponse<List<Module>>.ErrorResult("服务器内部错误"));
         }
     }

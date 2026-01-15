@@ -673,9 +673,11 @@ function renderTestDataList(data) {
 
     data.forEach(item => {
         const row = document.createElement('tr');
+        // 缩短模组显示：只显示模组编码和简短名称
+        const moduleDisplay = item.moduleCode ? `${item.moduleCode} - ${item.moduleName || ''}` : (item.moduleName || '-');
         row.innerHTML = `
             <td>${item.testId}</td>
-            <td>${item.moduleCode || ''} - ${item.moduleName || ''}</td>
+            <td title="${moduleDisplay}">${moduleDisplay}</td>
             <td>${formatDateTime(item.testTime)}</td>
             <td>${item.testType}</td>
             <td><span class="badge badge-${getCensoringTypeBadge(item.censoringType)}">${getCensoringTypeName(item.censoringType)}</span></td>

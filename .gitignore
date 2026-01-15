@@ -71,3 +71,4 @@ _ReSharper*/
 .idea/vcs.xml
 .idea/httpRequests/
 
+.vs/*.*

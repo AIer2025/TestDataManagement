@@ -71,4 +71,20 @@ _ReSharper*/
 .idea/vcs.xml
 .idea/httpRequests/
 
-.vs/*.*
+# Visual Studio 2026 (and later) user-specific files
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# ============================
+# IDE & Tooling
+# ============================
+# Visual Studio 2026 local settings and cache
+# Contains machine-specific data like IntelliSense DB, debug sessions, etc.
+.vs/
+
+# Other common ignores...
+bin/
+obj/
